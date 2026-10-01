@@ -1,0 +1,5 @@
+spring:
+  profiles:
+    active: dev
+
+# 지워서 개인 CPU 환경에 맞게 연습해보기, 다 지워도 상관없음

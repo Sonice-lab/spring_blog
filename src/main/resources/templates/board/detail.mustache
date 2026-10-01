@@ -1,0 +1,59 @@
+{{> layout/header}}
+
+<div class="container p-5">
+
+    {{! 수정, 삭제 버튼: 오른쪽 정렬 }}
+    <div class="d-flex justify-content-end">
+        <a href="/board/{{board.id}}/update" class="btn btn-warning me-1">수정</a>
+        <form action="/board/{{board.id}}/delete" method="post">
+            <button class="btn btn-danger">삭제</button>
+        </form>
+    </div>
+
+    <div class="d-flex justify-content-end">
+        <b>작성자</b> : {{board.username}}
+    </div>
+
+    <div>
+        <h2><b>{{board.title}}</b></h2>
+        <hr>
+        <div class="m-4 p-2">
+            {{board.content}}
+        </div>
+    </div>
+
+    {{! 댓글: 아직 기능이 없어 화면만 만들어 둡니다 }}
+    <div class="card mt-3">
+        <div class="card-body">
+            <form action="/reply/save" method="post">
+                <textarea class="form-control" rows="2" name="comment" placeholder="댓글을 입력하세요"></textarea>
+                <div class="d-flex justify-content-end">
+                    <button type="submit" class="btn btn-outline-primary mt-1">댓글 등록</button>
+                </div>
+            </form>
+        </div>
+        <div class="card-footer"><b>댓글 목록</b></div>
+        <div class="list-group">
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+                <div class="d-flex">
+                    <div class="px-1 me-1 bg-primary text-white rounded">박지훈</div>
+                    <div>댓글 내용입니다</div>
+                </div>
+                <form action="/reply/1/delete" method="post">
+                    <button class="btn"><i class="fa-solid fa-trash"></i></button>
+                </form>
+            </div>
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+                <div class="d-flex">
+                    <div class="px-1 me-1 bg-primary text-white rounded">이서연</div>
+                    <div>댓글 내용입니다</div>
+                </div>
+                <form action="/reply/2/delete" method="post">
+                    <button class="btn"><i class="fa-solid fa-trash"></i></button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{> layout/footer}}

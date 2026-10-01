@@ -1,0 +1,14 @@
+{{> layout/header}}
+
+<div class="container p-5">
+    {{#boardList}}
+        <div class="card mb-3">
+            <div class="card-body">
+                <h4 class="card-title">{{title}}</h4>
+                <a href="/board/{{id}}" class="btn btn-primary">상세보기</a>
+            </div>
+        </div>
+    {{/boardList}}
+</div>
+
+{{> layout/footer}}
