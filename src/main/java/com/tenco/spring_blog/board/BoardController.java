@@ -58,7 +58,7 @@ public class BoardController {
     }
 
     // 코드 추가
-    // POST  http://localhost:8080/board/save  (화면 요청)
+    // POST  http://localhost:8080/board/save  (최초 글쓰기 후 저장 화면 요청)
     // 스프링 부트의 데이터 기본 파싱 전략 key=value
     // name 속성 기준으로 값을 추출할 수 있다.
     @PostMapping({"/board/save"})

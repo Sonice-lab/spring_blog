@@ -1,23 +1,25 @@
 {{> layout/header}}
 
-<div class="container p-5">
-    <div class="card">
-        <div class="card-header"><b>글 수정</b></div>
-        <div class="card-body">
-            <form action="/board/{{board.id}}/update" method="post">
-                <div class="mb-3">
-                    <input type="text" class="form-control" value="{{board.username}}" readonly>
-                </div>
-                <div class="mb-3">
-                    <input type="text" class="form-control" name="title" value="{{board.title}}">
-                </div>
-                <div class="mb-3">
-                    <textarea class="form-control" rows="5" name="content">{{board.content}}</textarea>
-                </div>
-                <button class="btn btn-primary form-control">수정 완료</button>
-            </form>
-        </div>
+<h1>게시글 수정 화면 + 폼 태그 완성</h1>
+<p>게시글 수정 화면 경로</p>
+<p>http://localhost:8080/board/4/update</p>
+
+
+<form action="/board/{{board.id}}/update" method="post">
+    <div>
+        <input type="text" class="form-control" value="{{board.username}} readonly">
     </div>
-</div>
+
+    <div>
+        <input type="text" class="form-control" name="title", value="{{board.title}}">
+    </div>
+
+    <div>
+    <textarea class="form-control" rows="5" name="content">{{board.content}}</textarea>
+    </div>
+    <button class="btn btn-primary form-control">수정완료</button>
+
+
+</form>
 
 {{> layout/footer}}
