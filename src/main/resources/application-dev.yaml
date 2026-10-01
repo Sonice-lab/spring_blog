@@ -36,7 +36,7 @@ spring:
     defer-datasource-initialization: true
 
   # 서버 시작시 이 파일 실행
-  sql:
-    init:
-      data-locations:
-        - classpath:db/data.sql
+#  sql:
+#    init:
+#      data-locations:
+#        - classpath:db/data.sql
