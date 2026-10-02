@@ -72,6 +72,9 @@ public class BoardController {
                 .username(reqDto.getUsername())
                 .build();
         // new Board(reqDto.getTitle(), reqDto.getContent(), reqDto.getUsername());
+        // 방어 로직 작동: 데이터베이스에 접근하거나 엔티티를 만들기 전에 필수 값을 먼저 검사
+        // 여기서 빈 값이 발견되면 우리가 DTO에 정의한 IllegalAugumentException에 발생하며 아래 코드는 실행되지 않음
+        reqDto.validate();
 
         //
         Board boardEntity = boardPersistRepository.save(board);
