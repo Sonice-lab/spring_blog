@@ -35,7 +35,7 @@ spring:
     #추후 data-sql 을 테이블 생성 후에 실행한다.
     defer-datasource-initialization: true
 
-  # 서버 시작시 이 파일 실행
+  # 서버 시작시 이 파일 실행 -> 없으면 샘플 데이터가 들어가지 않는다.
   sql:
     init:
       data-locations:
