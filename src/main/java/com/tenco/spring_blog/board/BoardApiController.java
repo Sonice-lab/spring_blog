@@ -21,6 +21,12 @@ public class BoardApiController {
     // 주소 설계
     // DELETE http://localhost:8080/api/boards/{id}
     @DeleteMapping("/api/boards/{id}")
-
-
+    public ResponseEntity<String> delete(@PathVariable Long id) {
+        try {
+            boardPersistRepository.deleteByID(id);
+            return ResponseEntity.ok("정상 삭제 되었습니다."); // 200 + 메세지
+        }catch (Exception e) {
+            return ResponseEntity.badRequest().body("잘못된 요청입니다."); // 400 + 메세지
+        }
+    }
 }
