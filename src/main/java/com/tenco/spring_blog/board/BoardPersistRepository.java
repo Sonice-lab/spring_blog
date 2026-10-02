@@ -1,7 +1,7 @@
 package com.tenco.spring_blog.board;
 
+
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -14,151 +14,136 @@ import java.util.List;
  * 즉, 소프트웨어에서는 데이터를 저장하고 관리하는 곳을 추상화한 개념이다.
  */
 
-@RequiredArgsConstructor //final 필드 초기화 처리
-@Repository // IoC + 싱글톤
+// =================================================================
+// [1단계] 클래스 기본 설정 및 의존성 주입
+// =================================================================
+// 1. 이 클래스가 Spring의 저장소(Repository) 역할을 한다는 것을 스프링 컨테이너에 알려주기 (빈 등록)
+@Repository
+// 2. final이 붙은 필드를 모아 자동으로 생성자를 만들어주는 롬복(Lombok) 설정하기
+@RequiredArgsConstructor
 public class BoardPersistRepository {
+// 3. JPA의 핵심인 영속성 컨텍스트를 관리하는 관리자(EntityManager)를 final 필드로 선언하기
 
     private final EntityManager em;
 
+    // =================================================================
+// [2단계] 데이터 저장 (Create)
+// =================================================================
+// 1. 메서드 목적: 비영속 상태의 새 게시글 객체를 받아 DB에 저장한다.
+// 2. DB에 변경(쓰기)이 일어나므로 작업 단위(트랜잭션)를 묶어주기
     @Transactional
-    public void updateById(Long id, BoardRequest.UpdateDto reqDto) {
-        // 1. 수정할 엔티티를 먼저 조회 후 영속 상태로 만듬
-        Board boardEntity = em.find(Board.class, id);
-        // 2. 방어적 코드 - 엔티티 존재 여부 확인
-        if(boardEntity == null) {
-            throw new IllegalArgumentException("수정할 게시글을 찾을 수 없습니다.");
-        }
-        // 업데이트를 할 시 1차 캐시를 저장하는 것
-        // 엔티티 객체 상태 변경 중
-//        boardEntity.setTitle(reqDto.getTitle());
-//        boardEntity.setContent(reqDto.getContent());
-        // 1차 캐시에 저장된 엔티티 객체의 내부 상태 값이 변경이 되고 트랜잭션이 종료가 되면
-        // 더티 체킹(Dirty Checking)이 발생함
-        // 1차 캐시의 상태와 DB의 상태가 다름 > 업데이트 쿼리를 자동으로 체크해줌 > 더티 체크의 개념
-        boardEntity.update(reqDto);
-    }
-
-    // 게시글 삭제하기(영속성 콘텍스트를 활용한 안전한 삭제)
-    @Transactional
-    public void deleteByID(Long id) {
-        // 1. 먼저 삭제할 엔티티를 영속 상태로 조회
-        Board boardEntity = em.find(Board.class, id);
-
-        // 2. 엔티티 존재 여부 확인(안전한 삭제)
-        if(boardEntity == null) {
-            throw new IllegalArgumentException("삭제할 게시글을 찾을 수 없습니다.");
-        }
-
-        // 3. 영속 상태의 엔티티를 삭제 상태로 변경
-        em.remove(boardEntity);
-
-        // 삭제 과정
-        // board 엔티티가 영속 --> 삭제로 변경
-        // 1차 캐시에서 해당 엔티티가 제거됨
-        // 트랜잭션 커밋 시점에 DELETE SQL자동 실행됨
-
-        //도전 과제: 삭제하는 JPQL 쿼리 만들어보기
-        // delete from Board b where b.id = :id
-        // delete from Board b where b.id = :id
-//        Query query = em.createQuery("delete from Board b where b.id = :id");
-//        query.setParameter("id", id);
-//        query.executeUpdate();
-
-//        return em.createQuery("delete from Board b where b.id = :id")
-//                .setParameter("id", id)
-//                .executeUpdate();
-//
-
-    }
-
-
-
-    // 기능: 기본키로 게시글 단 건 조회(1차 캐쉬 활용)
-    public Board findById(Long id) {
-        Board board = em.find(Board.class, id);
-        //find() 메서드의 특징:
-        // 1. 기본키로만 조회 가능
-        // 2. 1차 캐시에 먼저 찾기 시도
-        // 3. 없으면 DB에서 조회 후 1차 캐시에 저장
-        // 4. 영속 상태로 만든 후 반환하면 된다.
-
+    public Board save(Board board) {
+        // 3. 전달받은 순수 자바 객체(Entity)를 EntityManager를 통해 '영속 상태'로 만들기
+        //  - 아직 실제 INSERT 쿼리는 실행되지 않음(쓰기 지연)
+        em.persist(board);
+        // 4. (트랜잭션이 종료될 때 INSERT 쿼리가 날아감을 기억하며) 영속 상태가 된 객체 반환하기
+        //  - board 객체의 id 필드에 DB가 자동 생성한 PK 값이 할당된 채로 반환됨
         return board;
     }
 
-    //JPQL을 사용한 조회 방법
-    public Board findByIdWithJPQL(Long id) {
-        String jpql = """
-                select b from Board b where b.id = :id
-                """;
+    // =================================================================
+// [3단계] 데이터 단건 조회 (Read - 1차 캐시 활용)
+// =================================================================
+// 1. 메서드 목적: PK(id)를 이용해 게시글 하나를 찾는다. (읽기 전용이므로 트랜잭션 불필요)
+    public Board findById(Long id) {
+        // 2. EntityManager가 제공하는 기본 검색 기능을 사용해 해당 id의 엔티티 찾기
+        // 3. 머릿속으로 흐름 그리기: '1차 캐시를 먼저 뒤지고 -> 없으면 DB에서 찾아서 -> 1차 캐시에 올린 후 -> 반환한다'
+        Board board = em.find(Board.class, id);
 
+        // 4. 찾아온 엔티티 반환하기
+        return board;
+    }
+
+    // =================================================================
+// [3-1단계] 데이터 단건 조회 (Read - JPQL 활용)
+// =================================================================
+// 1. 메서드 목적: JPQL을 사용해 PK(id)로 게시글 하나를 찾는다.
+    public Board findByIdWithJPQL(Long id) {
+        // 2. 테이블이 아닌 '객체'를 대상으로 하는 쿼리문(String) 작성하기
+        String jpql = """
+                      select b from Board b where b.id = :id
+                      """;
+
+        // 3. 예외 처리를 위한 try-catch 블록 열기
         try {
+            // 4. EntityManager를 통해 JPQL 쿼리를 만들고 -> 파라미터(id)를 바인딩하고 -> 단일 결과(SingleResult) 가져오기
             return em.createQuery(jpql, Board.class)
                     .setParameter("id", id)
                     .getSingleResult();
         } catch (Exception e) {
+            // 5. 결과가 없어서 에러가 발생하면 null을 반환하도록 catch 블록 처리하기
             return null;
         }
-        // JPQL 의 단점
-        // 1. 항상 1차 캐쉬를 우회하여 DB에 접근
-        // 2. 코드가 복잡할 수 있음
-        // 3. getSingleResult() 예외 처리 필요
     }
 
-    // JPQL을 사용한 게시글 목록 조회
+
+// =================================================================
+// [4단계] 데이터 다건 조회 (Read - 목록)
+// =================================================================
+// 1. 메서드 목적: 여러 개의 게시글 목록(List)을 최신순으로 가져온다.
     public List<Board> findAll() {
-        // JPQL: 엔티티 객체를 대상으로 하는 객체지향 쿼리
-        // Board는 엔티티 클래스명, b 별칭으로 사용 가능
-        // 테이블명(board_tb)이 아닌 엔티티명(Board)을 사용
-        // 쿼리 설계
+// 2. 전체 엔티티를 조회하고 정렬하는 JPQL 쿼리문(String) 작성하기
         String jpql = """
                 select b from Board b order by b.createdAt desc
                 """;
-        // createQuery() 메서드: JQPL 쿼리 생성
-        // 두번째 매개변수로 반환 타입을 지정(타입 안정성 확보)
-        // getResultList(): List<Board> 반환
+// 3. EntityManager를 통해 쿼리를 생성할 때, 반환될 데이터의 '타입'도 함께 지정해 주기
+// 4. 쿼리를 실행하고 결과를 리스트(List) 형태로 뽑아서 반환하기
         return em.createQuery(jpql, Board.class).getResultList();
     }
 
-    @Transactional  // 자바에서 웹표준 기술을 사용하기 위한 묶음을 의미 > 자카르타
-    //게시글 저장 기능
-    public Board save(Board board) {
-
-        // 1. 매개변수로 받은 board는 이 시점에서 비영속상태(1차 캐시에 안 들어간 상태)하고 할 수 있다.
-        //   - 아직 영속성 컨텍스트에 관리되지 않은 상태를 의미한다.
-        //   - 데이터베이스와 연관 없는 순수 Java 객체인 상태
-        em.persist(board);
-        // 2. em.persist(board); 이후에 엔티티를 영속성 콘텍스트에 저장시킴
-        //   - board 객체가 영속 상태로 변경됨
-        //   - 영속성 콘텍스트가 엔티티를 관리하기 시작함
-        //   - 아직 실제 INSERT 쿼리는 실행되지 않음 (쓰기 지연)
-
-        // 3. 트랜잭션 커밋 시점에 실제 INSERT 쿼리가 실행됨
-        //   - 이 때 영속성 콘텍스트의 변경 사항이 DB에 반영됨
-        //   - board 객체의 id 필드에 자동 생성된 값이 할당됨.
-        return board;
-
-        // 4. 영속 상태의 객체를 반환
-        //   - 자동으로 생성된 id 값일 포함한 객체가 반환됨.
+// =================================================================
+// [5단계] 데이터 수정 (Update - 더티 체킹)
+// =================================================================
+// 1. 메서드 목적: 특정 id의 게시글을 찾아 내용을 수정한다.
+// 2. 데이터 변경(쓰기)이 일어나므로 작업 단위(트랜잭션) 묶어주기
+    @Transactional
+    public void updateById(Long id, BoardRequest.UpdateDto reqDto) {
+// 3. [조회]: 수정할 엔티티를 id로 검색하여 '영속 상태'로 만들기 (1차 캐시에 올리기)
+        Board boardEntity = em.find(Board.class, id);
+// 4. [검증]: 방어적 코드 작성 -> 만약 조회한 엔티티가 없다면(null) 예외(Exception) 던지기
+        if(boardEntity == null) {
+            throw new IllegalArgumentException("수정할 게시글을 찾을 수 없습니다.");
+        }
+// 5. [수정]: 영속 상태인 엔티티의 데이터를 새로운 데이터(DTO)로 덮어씌우기
+// 6. 머릿속으로 흐름 그리기: '별도로 save나 update 메서드를 부르지 않아도,
+// 트랜잭션이 끝날 때 1차 캐시와 데이터가 다르면(더티 체킹) 자동으로 UPDATE 쿼리가 날아간다'
+        boardEntity.update(reqDto);
     }
 
-    // 엔티티의 영속 상태 4가지
-    // 1. 비영속상태: 새로 생성된 객체, 영속성 콘텍스트와 무관
-    // 2. 영속 상태: 영속성 콘텍스트의 관리되는 상태
-    // 3. 준 영속 상태: Detach. 영속성 콘텍스트에서 분리된 상태
-    // 4. 삭제 상태: 삭제 예정 상태(트랜잭션 커밋 시 DELETE 쿼리 실행)
-    // 메서드 만들기
+// =================================================================
+// [6단계] 데이터 삭제 (Delete)
+// =================================================================
+// 1. 메서드 목적: 특정 id의 게시글을 찾아 삭제한다.
+// 2. 데이터 변경(삭제)이 일어나므로 작업 단위(트랜잭션) 묶어주기
+    @Transactional
+    public void deleteById(Long id) {
+// 3. [조회]: 삭제할 엔티티를 id로 검색하여 '영속 상태'로 만들기
+        Board boardEntity = em.find(Board.class, id);
+// 4. [검증]: 방어적 코드 작성 -> 만약 조회한 엔티티가 없다면(null) 예외(Exception) 던지기
+        if(boardEntity == null) {
+            throw new IllegalArgumentException("삭제할 게시글을 찾을 수 없습니다.");
+        }
+// 5. [삭제]: EntityManager를 이용해 영속 상태의 엔티티를 '삭제 상태'로 변경하기
+// 6. 머릿속으로 흐름 그리기: '트랜잭션이 커밋되는 시점에 실제로 DELETE 쿼리가 날아간다'
+        em.remove(boardEntity);
+
+        // (도전 과제 참고) 영속성 컨텍스트를 거치지 않고 직접 쿼리를 날릴 경우의 예시
+        // em.createQuery("delete from Board b where b.id = :id")
+        //   .setParameter("id", id)
+        //   .executeUpdate();
+    }
+
+// =================================================================
+// [부록] 엔티티의 생명주기 연습 (개념 복습용)
+// =================================================================
     private void entityLifecycleEx() {
-        // 1. 비영속성 상태
+// 1. 비영속 상태: 순수한 새 객체 만들기 (new)
         Board board = new Board("제목", "내용", "작성자");
-
-        // 2. 영속 상태
+// 2. 영속 상태: EntityManager를 통해 객체 관리 시작하기
         em.persist(board);
-
-        // 3. 준영속 상태: 영속성 콘텍스트에서 분리된 상태
+// 3. 준영속 상태: 영속성 컨텍스트에서 해당 객체 분리해보기(detach)
         em.detach(board);
-
-        // 4. 삭제 상태 또는 삭제 예정 상태
+// 4. 삭제 상태: 객체를 삭제 상태로 전환해보기(remove)
         em.remove(board);
     }
-
 }
