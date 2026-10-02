@@ -5,7 +5,8 @@
     {{! 수정, 삭제 버튼: 오른쪽 정렬 }}
     <div class="d-flex justify-content-end">
         <a href="/board/{{board.id}}/update" class="btn btn-warning me-1">수정</a>
-        <form action="/board/{{board.id}}/delete" method="post">
+        <form action="/board/{{board.id}}/delete" method="post" id="deleteForm">
+            <input type="hidden" id="boardId" value="{{board.id}}">
             <button class="btn btn-danger">삭제</button>
         </form>
     </div>
@@ -55,5 +56,26 @@
         </div>
     </div>
 </div>
+
+<script>
+// 상수 선언
+    const deleteForm = document.getElementById("deleteForm");
+
+    //이벤트리스너 등록
+    //비동기라서 기다리는 시간이 할당되어야 하기 때문에 async와 await를 활용해야 합니다.
+    deleteForm.addEventListener("submit", async (event) => {
+        // 1. 폼의 기본 동작(POST 전송 후 페이지 이동, 새로고침)을 방어한다.
+        // 삭제를 했을 때 홈으로 돌아가기
+        event.preventDefault();
+        // 2. 삭제는 되돌릴 수 없으므로 한 번 더 물어보기
+        if(!confirm("정말 삭제하시겠습니까?")) {
+            return;
+        }
+        // 3. 숨겨둔 input 태그에 할당되어 있는 board pk 값을 가져온다.
+
+
+    })
+
+</script>
 
 {{> layout/footer}}
