@@ -18,6 +18,9 @@
             </form>
         </div>
     </div>
+    {{#errorMessage}}
+        <div class="alert alert-danger m-3">{{errorMessage}}</div>
+    {{/errorMessage}}
 </div>
 
 {{> layout/footer}}

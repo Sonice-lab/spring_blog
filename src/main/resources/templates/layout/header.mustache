@@ -17,11 +17,18 @@
         </button>
         <div class="collapse navbar-collapse" id="collapsibleNavbar">
             <ul class="navbar-nav">
-                <li class="nav-item"><a class="nav-link" href="/join">회원가입</a></li>
-                <li class="nav-item"><a class="nav-link" href="/login">로그인</a></li>
-                <li class="nav-item"><a class="nav-link" href="/board/save">글쓰기</a></li>
-                <li class="nav-item"><a class="nav-link" href="/user/update">회원정보</a></li>
-                <li class="nav-item"><a class="nav-link" href="/logout">로그아웃</a></li>
+                {{#sessionUser}}
+                    <!-- 로그인했을 때 보여져야하는 메뉴 -->
+                    <li class="nav-item"><a class="nav-link" href="/board/save">글쓰기</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/user/update">회원정보</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/logout">로그아웃</a></li>
+                {{/sessionUser}}
+
+                {{^sessionUser}}
+                    <!-- 로그인 안 했을 때 보여져야하는 메뉴 -->
+                    <li class="nav-item"><a class="nav-link" href="/join">회원가입</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/login">로그인</a></li>
+                {{/sessionUser}}
             </ul>
         </div>
     </div>
