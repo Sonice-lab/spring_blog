@@ -6,3 +6,8 @@ spring:
       expose-session-attributes: true #머스태치 파일에서 세션에 담은 값을 바로 사용 가능
   profiles:
     active: local
+
+server:
+  servlet:
+    session:
+      tracking-modes: cookie    # 세션 번호를 쿠키로만 전달 (주소에 ;jsessionid 를 붙이지 않음)
