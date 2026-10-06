@@ -11,14 +11,15 @@ spring:
   #데이터베이스 연결 (MySQL)
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/myblog?serverTimezone=Asia/Seoul
-    username: root
-    password: root
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
 
 
   # JPA 설정
   jpa:
     hibernate:
+      default_batch_fetch_size: 10
       # 운영 환경에서는 create를 사용하지 않는다.
       # 없는 테이블과 컬럼만 추가하는 기능
       ddl-auto: update

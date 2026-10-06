@@ -1,5 +1,44 @@
-spring:
-  profiles:
-    active: dev
+server:
+  port: 8080
 
-# 지워서 개인 CPU 환경에 맞게 연습해보기, 다 지워도 상관없음
+logging:
+  level:
+    root: INFO                           # 스프링과 라이브러리는 INFO 이상만 출력
+    com.tenco.spring_blog: DEBUG         #우리 코드는 DEBUG 이상까지
+
+
+
+spring:
+  #데이터베이스 연결
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+  #H2 콘솔 화면 켜기(http://localhost:8080/h2-console)
+  h2:
+    console:
+      enabled: true
+
+  # JPA 설정
+  jpa:
+    hibernate:
+      # 시작할 때마다 테이블을 새로 생성한다.
+      # 기존 데이터는 모두 지워진다.(개발용)
+      ddl-auto: create
+    # 실행되는 sql을 콘솔에 출력한다.
+    show-sql: true
+    properties:
+      hibernate:
+        default_batch_fetch_size: 10
+        format_sql: true     #출력되는 SQL을 콘솔창에 줄바꿈해 보기 좋게 표시
+    #추후 data-sql 을 테이블 생성 후에 실행한다.
+    defer-datasource-initialization: true
+
+  # 서버 시작시 이 파일 실행 -> 없으면 샘플 데이터가 들어가지 않는다.
+  sql:
+    init:
+      mode: always  #MySQL 사용시 필수 - (embedded, never, always)
+      data-locations:
+        - classpath:db/data.sql

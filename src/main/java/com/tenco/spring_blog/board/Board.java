@@ -1,6 +1,7 @@
 package com.tenco.spring_blog.board;
 
 
+import com.tenco.spring_blog.user.User;
 import com.tenco.spring_blog.util.MyDateUtil;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -27,16 +28,26 @@ public class Board {
     // 별도 어노테이션이 없으면 자바의 필드명이 컬럼명이 된다.
     private String title;
     private String content;
-    private String username;
+    // private String username;
+
+    //N:1
+    // 데이터를 가지고 오는 전략
+    // 1. LAZY - 빈 껍데기만 가지고 왔다가 .을 활용하여 가지고 왔을 때 user 정보를 검색할 때 한 번더 쿼리 던지기
+    // 실무에서 보통 LAZY 전략을 사용함
+    // LAZY 전략: 게시글을 조회할 때 사용자는 바로 조회하지 않고, 실제로 사용할 때 그 때 한 번 더 조회
+    // 2. EAGER - 한 방에 다 가지고 오기, 쓰진 않지만 일단 전부 가지고 온다.
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id") // board_tb ()에 만들어질 외래키 컬럼 이름 설정
+    private User user;
 
 
     // 생성자 설계 (비즈니스 로직)
     // id값과 createdAt은 굳이 만들지 않는다. -> JPA에서 자동으로 설정해주므로 매개변수에서 제외
     @Builder
-    public Board(String title, String content, String username) {
+    public Board(String title, String content, User user) {
         this.title = title;
         this.content = content;
-        this.username = username;
+        this.user = user;
     }
 
     // 자신의 상태값을 변경하는 메서드 추가 - 객체 지향 설계
