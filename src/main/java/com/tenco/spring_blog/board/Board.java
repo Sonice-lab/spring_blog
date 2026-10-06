@@ -18,8 +18,6 @@ import java.sql.Timestamp;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-
 public class Board {
     @Id // 이 필드가 기본키 임을 나타냄
     //기본키값을 자동으로 생성(IDENTITY -> DB의 기본 설정을 따른다.) AUTO_INCREMENT 기능 사용
@@ -28,15 +26,15 @@ public class Board {
     // 별도 어노테이션이 없으면 자바의 필드명이 컬럼명이 된다.
     private String title;
     private String content;
-    // private String username;
 
+    // private String username;
     //N:1
     // 데이터를 가지고 오는 전략
     // 1. LAZY - 빈 껍데기만 가지고 왔다가 .을 활용하여 가지고 왔을 때 user 정보를 검색할 때 한 번더 쿼리 던지기
     // 실무에서 보통 LAZY 전략을 사용함
     // LAZY 전략: 게시글을 조회할 때 사용자는 바로 조회하지 않고, 실제로 사용할 때 그 때 한 번 더 조회
     // 2. EAGER - 한 방에 다 가지고 오기, 쓰진 않지만 일단 전부 가지고 온다.
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id") // board_tb ()에 만들어질 외래키 컬럼 이름 설정
     private User user;
 
@@ -73,7 +71,6 @@ public class Board {
 
     //메서드 만들기
     // 시간을 포맷팅하는 메서드 추가
-
     // 객체가 생성된 시점
     public String getTime() {
         return MyDateUtil.timestampFormat(createdAt);
