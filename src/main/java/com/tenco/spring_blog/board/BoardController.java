@@ -133,7 +133,7 @@ public class BoardController {
             return "redirect:/login";
         }
         try {
-            // 2. 삭제할 게시글 조화 (권한 체크를 위해)
+            // 2. 삭제할 게시글 조회 (권한 체크를 위해)
             Board boardEntity = boardPersistRepository.findById(id);
             // 3. 권한 체크 : 본인이 작성한 게시글만 삭제
             if (!boardEntity.isOwner(sessionUser.getId())) {
