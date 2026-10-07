@@ -1,0 +1,27 @@
+{{>layout/header}}
+
+<div class="error-page-wrapper">
+    <div class="container p-5 error-card">
+
+        <!-- 자물쇠 아이콘 (인증 필요) -->
+        <div class="mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="#ffc107" class="bi bi-lock" viewBox="0 0 16 16">
+                <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2zM5 8h6a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/>
+            </svg>
+        </div>
+
+        <h1 style="color: #ffc107;">Unauthorized 401</h1>
+        <hr class="my-4 text-muted">
+
+        <h3 class="error-msg mb-4">{{msg}}</h3>
+        <p class="text-muted mb-4">서비스를 이용하시려면 로그인이 필요합니다.</p>
+
+        <div class="mt-4 error-btn-group">
+            <a href="/login" class="btn btn-secondary me-2">로그인</a>
+            <a href="/" class="btn btn-primary">메인페이지</a>
+        </div>
+
+    </div>
+</div>
+
+{{> layout/footer}}

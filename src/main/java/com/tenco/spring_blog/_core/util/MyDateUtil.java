@@ -1,4 +1,4 @@
-package com.tenco.spring_blog.util;
+package com.tenco.spring_blog._core.util;
 
 // 날짜 시간 관련된 유틸리티 클래스
 //static 메서드로 구성하여 객체 생성 없이 바로 사용 가능

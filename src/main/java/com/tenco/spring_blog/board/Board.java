@@ -2,7 +2,7 @@ package com.tenco.spring_blog.board;
 
 
 import com.tenco.spring_blog.user.User;
-import com.tenco.spring_blog.util.MyDateUtil;
+import com.tenco.spring_blog._core.util.MyDateUtil;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

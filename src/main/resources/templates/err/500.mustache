@@ -1,0 +1,27 @@
+{{>layout/header}}
+
+<div class="error-page-wrapper">
+    <div class="container p-5 error-card">
+
+        <!-- 주의 삼각형 아이콘 (서버 치명적 오류) -->
+        <div class="mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="#dc3545" class="bi bi-exclamation-triangle" viewBox="0 0 16 16">
+                <path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z"/>
+                <path d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995z"/>
+            </svg>
+        </div>
+
+        <h1 style="color: #dc3545;">Internal Server Error 500</h1>
+        <hr class="my-4 text-muted">
+
+        <h3 class="error-msg mb-4">{{msg}}</h3>
+        <p class="text-muted mb-4">서버에 일시적인 오류가 발생했습니다.<br>잠시 후 다시 시도해 주세요.</p>
+
+        <div class="mt-4 error-btn-group">
+            <a href="/" class="btn btn-primary">메인페이지</a>
+        </div>
+
+    </div>
+</div>
+
+{{> layout/footer}}
