@@ -3,6 +3,8 @@ package com.tenco.spring_blog.controller;
 import com.tenco.spring_blog.user.User;
 import com.tenco.spring_blog.user.UserPersistRepository;
 import com.tenco.spring_blog.user.UserRequest;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -68,6 +70,7 @@ public class UserController {
 
     // 주소 설계
     // GET http://localhost:8080/login
+    // 미션 5 적용: 로그인 화면을 열 때 쿠키 읽기
     @GetMapping("/login")
     public String loginForm
         (@CookieValue(name = "rememberUsername", required = false) String rememberUsername, Model model) {
@@ -82,7 +85,7 @@ public class UserController {
     // POST http://localhost:8080/login
     // 로그인 처리(예외적으로 POST 요청(보안상의 이유))
     @PostMapping("/login")
-    public String login(UserRequest.LoginDto loginDto, HttpSession session, Model model) {
+    public String login(UserRequest.LoginDto loginDto, HttpSession session, Model model, HttpServletResponse response) {
         log.info("--- 로그인 요청 ---");
         log.info("사용자명: {} ", loginDto.getUsername());
 
@@ -105,6 +108,27 @@ public class UserController {
             // 4. 로그인 성공: 세션에 사용자 정보를 저장
             session.setAttribute("sessionUser", sessionUser);
             log.info("로그인한 사용자: {} ", sessionUser.getUsername());
+
+            // 미션 3 & 4 적용: 쿠키 생성 및 삭제 로직
+            if(loginDto.isRememberId()) {
+                // 미션 3: 체크하고 로그인 시 7일짜리 쿠키 저장
+                Cookie cookie = new Cookie("rememberUsername", sessionUser.getUsername());
+                // 7일 유지(초로 환산)
+                cookie.setMaxAge(60 * 60 * 24 * 7);
+                // 자바스크립트에서 읽을 수 없게 함(보안을 위해)
+                cookie.setHttpOnly(true);
+                // 애플리케이션 모든 경로에서 유효
+                cookie.setPath("/");
+                response.addCookie(cookie);
+
+            } else {
+                // 미션 4: 체크를 풀고 로그인 시 기존 쿠키 삭제
+                Cookie cookie = new Cookie("rememberUsername", "");
+                // 수명을 0으로 설정하여 삭제
+                cookie.setMaxAge(0);
+                cookie.setPath("/");
+                response.addCookie(cookie);
+            }
 
             // 5. 성공시 메인페이지로 리다이렉트
             return "redirect:/";

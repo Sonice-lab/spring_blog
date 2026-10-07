@@ -9,13 +9,13 @@
                     보안상의 이유로 반그시 POST 요청을 해야한다.-->
             <form action="/login" method="post">
                 <div class="mb-3">
-                    <input type="text" class="form-control" placeholder="사용자명" name="username">
+                    <input type="text" class="form-control" placeholder="사용자명" name="username" value="{{#rememberUsername}}{{rememberUsername}}{{/rememberUsername}}">
                 </div>
                 <div class="mb-3">
                     <input type="password" class="form-control" placeholder="비밀번호" name="password">
                 </div>
                 <div class="mb-3 form-check">
-                    <input type="checkbox" class="form-check-input" id="rememberId" name="rememberId" value="true">
+                    <input type="checkbox" class="form-check-input" id="rememberId" name="rememberId" value="true" {{#rememberUsername}}checked{{/rememberUsername}}>
                     <label class="form-check-label" for="rememberId">아이디 저장</label>
                 </div>
                 <button class="btn btn-primary form-control">로그인</button>
