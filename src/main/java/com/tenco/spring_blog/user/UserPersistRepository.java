@@ -13,16 +13,38 @@ import org.springframework.stereotype.Repository;
 public class UserPersistRepository {
     private final EntityManager em;
 
+    @Transactional
+    public User updateById(Long id, UserRequest.UpdateDto updateDto) {
+        User userEntity = em.find(User.class, id);
+        if(userEntity == null) {
+            throw new IllegalArgumentException("사용자를 찾을 수 없습니다.");
+        }
+        userEntity.update(updateDto.getPassword());
+        return userEntity;
+    }
+
+    // 회원정보 조회하는 기능 만들기(수정폼 용)
+    // 구현 방법 1)네이티브, 2) 객체 지향, 3) 엔티티 매니저 활용
+    // 최적의 방법은 pk를 활용하여 조회하는 것이다.
+
+    public User findById(Long id) {
+        User user = em.find(User.class, id);
+        if (user == null) {
+            throw new RuntimeException("사용자를 찾을 수 없습니다.");
+        }
+        return user;
+    }
+
     //회원 정보 조회 - 로그인(사용자 이름, 비밀번호 확인)
     public User findByUsernameAndPassword(String username, String password) {
-        try{
+        try {
             // JPQL -> 엔티티매니저에서 처리할 수 없을 때 직접 만들어야 함
             String jpql = "select u from User u where u.username = :username and u.password = :password";
             Query query = em.createQuery(jpql, User.class);
             query.setParameter("username", username);
             query.setParameter("password", password);
             return (User) query.getSingleResult();
-        }catch (Exception e) {
+        } catch (Exception e) {
             // 일치하는 사용자가 없거나 에러 발생 시 null 반환
             // 로그인 실패를 의미함
             return null;

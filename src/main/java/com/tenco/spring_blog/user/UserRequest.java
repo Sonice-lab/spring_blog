@@ -5,6 +5,24 @@ import lombok.Data;
 import org.springframework.web.bind.annotation.PostMapping;
 
 public class UserRequest {
+
+    // 회원정보 수정용 DTO 설계
+    @Data
+    public static class UpdateDto {
+        private String password;
+
+        public void Validate() {
+            if(password == null || password.trim().isEmpty()) {
+                throw new IllegalArgumentException("비밀번호는 필수입니다.");
+            }
+            if(password.length() < 4) {
+                throw new IllegalArgumentException("비밀번호는 네글자이상이어야 합니다.");
+            }
+            //필요하다면 길이 수 제한, 특수문자 포함 여부 설정 (정규표현식) 활용 가능
+        }
+        // toEntity(); ->save일 때만 필요. 그렇기에 필요 없음 (더티체킹을 활용하기 때문에)
+    }
+
     // 회원가입용 DTO 설계
     @Data
     public static class JoinDto {

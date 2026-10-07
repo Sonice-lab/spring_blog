@@ -2,10 +2,7 @@ package com.tenco.spring_blog.user;
 
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
@@ -15,7 +12,7 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 @Table(name="user_tb")
 @Entity //자동 테이블 생성
-
+@Data
 public class User {
 
     //pk 만들기
@@ -27,6 +24,7 @@ public class User {
     @Column(unique = true) // 유니크 설정
     private String username;
     @Column(length = 300) //길이를 300으로 변경
+    @Setter
     private String password;
     @Column(unique = true)
     private String email;
@@ -41,5 +39,10 @@ public class User {
         this.username = username;
         this.password = password;
         this.email = email;
+    }
+
+    //회원 정보 수정 - 더티체킹 (변경 감지용)
+    public void update(String password) {
+        this.password = password;
     }
 }
