@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
@@ -68,7 +69,12 @@ public class UserController {
     // 주소 설계
     // GET http://localhost:8080/login
     @GetMapping("/login")
-    public String loginForm() {
+    public String loginForm
+        (@CookieValue(name = "rememberUsername", required = false) String rememberUsername, Model model) {
+        // 쿠키가 존재하면 뷰로 값을 넘겨준다.
+        if(rememberUsername != null) {
+            model.addAttribute("rememberUsername", rememberUsername);
+        }
         // templates/ <- 콘텐츠 루트 경로
         return "user/login-form";
     }

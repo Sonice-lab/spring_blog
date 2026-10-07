@@ -51,6 +51,9 @@ public class UserRequest {
         private String username;
         private String password;
 
+        // 아이디 저장을 위한 필드 추가
+        private boolean rememberId;
+
         // 회원가입 시 데이터 검증 메서드를 똑같이 추가하기
         public void Validate() {
             if (username == null || username.trim().isEmpty()) {
@@ -61,7 +64,7 @@ public class UserRequest {
                 throw new IllegalArgumentException("패스워드는 필수입니다.");
             }
         }
-    }
+    } //end of LoginDto
 
 
 
