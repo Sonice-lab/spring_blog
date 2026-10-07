@@ -64,7 +64,13 @@ public class Board {
         // 3. 트랜잭션 커밋 시점에 변경된 필드만 UPDATE 쿼리를 자동 생성
         // 4. UPDATE board_tb SET title = ?, content = ?, where id = ?
 
+    }
 
+    public boolean isOwner(Long userId) {
+        // 어떻게 작성할 수 있을까?
+        // 게시글 수정/삭제 권한 체크용 편의 메서드
+        // 게시글을 작성한 유저와 사용자 유저가 같은가?
+        return this.user.getId().equals(userId);
     }
 
     //now() <-- 사용하지 않아도 자동으로 PC --> DB 날짜 주입

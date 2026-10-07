@@ -2,6 +2,7 @@ package com.tenco.spring_blog.user;
 
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,6 +12,7 @@ import java.sql.Timestamp;
 
 @Getter
 @NoArgsConstructor // 기본 생성자 필수(JPA 엔티티 생성자)
+@AllArgsConstructor
 @Table(name="user_tb")
 @Entity //자동 테이블 생성
 
@@ -40,7 +42,4 @@ public class User {
         this.password = password;
         this.email = email;
     }
-
-
-
 }
