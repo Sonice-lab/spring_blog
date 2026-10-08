@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
-@Import({BoardPersistRepository.class})
+@Import({BoardJpaRepository.class})
 @DataJpaTest
 public class BoardPersistRepositoryTest {
 
@@ -51,7 +51,7 @@ public class BoardPersistRepositoryTest {
     }
 
     @Autowired
-    private BoardPersistRepository boardPersistRepository;
+    private BoardJpaRepository boardPersistRepository;
 
     @Test
     public void save_연관관계_포함_게시글_저장_테스트() {
