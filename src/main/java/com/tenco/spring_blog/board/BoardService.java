@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Board 관련 비즈니스 로직을 처리하는 Service 계층
@@ -116,7 +115,6 @@ public class BoardService {
         return board;
     }
 
-
     // 게시글 삭제
     @Transactional
     public void deleteById(Long id, User sessionUser) {
@@ -134,7 +132,4 @@ public class BoardService {
         boardJpaRepository.deleteById(id);
         log.info("게시글 삭제 완료");
     }
-
-
-
 }

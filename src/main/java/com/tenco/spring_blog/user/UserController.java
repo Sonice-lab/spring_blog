@@ -89,7 +89,6 @@ public class UserController {
         session.setAttribute(Define.SESSION_USER, updateUser);
         // 4. 성공 후 메인페이지로 리다이렉트
         return "redirect:/";
-
     }
 
     // 로그아웃 경로
