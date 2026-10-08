@@ -61,7 +61,6 @@ public class UserController {
     // GET http://localhost:8080/login
     @GetMapping("/login")
     public String loginForm() {
-        // templates/ <- 콘텐츠 루트 경로
         return "user/login-form";
     }
 
@@ -104,10 +103,6 @@ public class UserController {
 
         // 1. 인증 검사
         User sessionUser = (User) session.getAttribute(Define.SESSION_USER);
-
-        if (sessionUser == null) {
-            return "redirect:/login";
-        }
         User user = userPersistRepository.findById(sessionUser.getId());
         model.addAttribute("user", user);
         // templates/ <- 콘텐츠 루트 경로
@@ -121,10 +116,6 @@ public class UserController {
 
         // 1. 인증 검사 -> 로그인이 되어있는데 해야하나? -> 세션 유효기간이 만료되었을 때 필요
         User sessionUser = (User) session.getAttribute(Define.SESSION_USER);
-        if (sessionUser == null) {
-            return "redirect:/login";
-        }
-
         // 2. 권한 검사 조회
         // 다른 사람의 정보는 처음부터 수정할 수 없음(대상이 실제로 있는지만 확인)
         User userEntity = userPersistRepository.findById(sessionUser.getId());
