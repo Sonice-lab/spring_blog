@@ -1,8 +1,5 @@
 package com.tenco.spring_blog.board;
-
-
 import com.tenco.spring_blog._core.error.Exception403;
-import com.tenco.spring_blog._core.error.Exception404;
 import com.tenco.spring_blog._core.util.Define;
 import com.tenco.spring_blog.user.User;
 import jakarta.servlet.http.HttpSession;
@@ -25,7 +22,6 @@ public class BoardController {
     private final BoardService boardService;
 
     // private final HttpSession session; -> 프로그램 구현시 무거워져서 권장하지 않음 -> 의존 관계로 활용하기
-
     @GetMapping({"/", "/board/list"})
     public String list(Model model) {
         List<Board> boardList = boardService.findAll();
@@ -49,7 +45,6 @@ public class BoardController {
         return "board/save-form";
     }
 
-
     @PostMapping({"/board/save"})
     public String save(BoardRequest.SaveDto saveDto, HttpSession session) {
         saveDto.validate();
@@ -70,7 +65,6 @@ public class BoardController {
         model.addAttribute("board", board);
         return "board/update-form";
     }
-
 
     // POST   http://localhost:8080/board/1/update  (게시글 수정 기능 요청)
     // object를 통으로 받기

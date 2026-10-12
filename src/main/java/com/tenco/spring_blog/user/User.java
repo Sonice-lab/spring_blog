@@ -1,10 +1,7 @@
 package com.tenco.spring_blog.user;
-
-
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-
 import java.sql.Timestamp;
 
 @Getter
@@ -13,6 +10,7 @@ import java.sql.Timestamp;
 @Table(name="user_tb")
 @Entity //자동 테이블 생성
 @Data
+
 public class User {
 
     //pk 만들기

@@ -11,7 +11,6 @@ public class BoardRequest {
     public static class SaveDto {
         private String title;
         private String content;
-        private String username;
 
         // 검증 메서드 (선택 사항)
         public void validate() {

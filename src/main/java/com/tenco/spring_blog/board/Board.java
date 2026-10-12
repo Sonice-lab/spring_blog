@@ -1,6 +1,4 @@
 package com.tenco.spring_blog.board;
-
-
 import com.tenco.spring_blog.user.User;
 import com.tenco.spring_blog._core.util.MyDateUtil;
 import jakarta.persistence.*;
@@ -36,7 +34,7 @@ public class Board {
     // 실무에서 보통 LAZY 전략을 사용함
     // LAZY 전략: 게시글을 조회할 때 사용자는 바로 조회하지 않고, 실제로 사용할 때 그 때 한 번 더 조회
     // 2. EAGER - 한 방에 다 가지고 오기, 쓰진 않지만 일단 전부 가지고 온다.
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id") // board_tb ()에 만들어질 외래키 컬럼 이름 설정
     private User user;
 

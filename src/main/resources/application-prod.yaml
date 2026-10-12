@@ -19,10 +19,12 @@ spring:
   # JPA 설정
   jpa:
     hibernate:
-      default_batch_fetch_size: 10
       # 운영 환경에서는 create를 사용하지 않는다.
       # 없는 테이블과 컬럼만 추가하는 기능
       ddl-auto: update
+    properties:
+      hibernate:
+        default_batch_fetch_size: 10
     # 실행되는 sql을 콘솔에 출력한다.
     show-sql: true
     #추후 data-sql 을 테이블 생성 후에 실행한다.
