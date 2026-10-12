@@ -10,7 +10,4 @@ public class Exception404 extends RuntimeException {
         super(msg); //부모 클래스의 메시지 설정
     }
 
-
-
-
 }

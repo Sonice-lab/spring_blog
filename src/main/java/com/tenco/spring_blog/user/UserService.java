@@ -40,7 +40,7 @@ public class UserService {
         log.info("회원 가입 서비스 처리 시작 - 사용자명: {}", joinDto.getUsername());
 
         // 비즈니스 조직
-        // 1. 중복체크하기 - 이미 있으면 null이 아님(idPresent 차이점 확인)
+        // 1. 중복체크하기 - 이미 있으면 null이 아님(ifPresent 차이점 확인)
         userJpaRepository.findByUsername(joinDto.getUsername())
                 .ifPresent(user -> {
                     log.warn("회원가입 실패 - 중복된 사용자명: {}", joinDto.getUsername());

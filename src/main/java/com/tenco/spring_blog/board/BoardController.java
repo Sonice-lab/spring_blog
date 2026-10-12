@@ -75,7 +75,7 @@ public class BoardController {
 
         // 유효성 검사
         updateDto.validate();
-        //서비스 계층에세 업데이트로 넘김
+        //서비스 계층에서 업데이트로 넘김
         User sessionUser = (User) session.getAttribute(Define.SESSION_USER);
         boardService.updateByID(id, updateDto, sessionUser);
 
