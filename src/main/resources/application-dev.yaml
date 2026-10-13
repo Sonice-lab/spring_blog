@@ -23,6 +23,7 @@ spring:
 
 # JPA 설정
   jpa:
+    open-in-view: false
     hibernate:
       # 시작할 때마다 테이블을 새로 생성한다.
       # 기존 데이터는 모두 지워진다.(개발용)

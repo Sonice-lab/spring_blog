@@ -2,6 +2,7 @@ package com.tenco.spring_blog._core.config;
 
 import com.tenco.spring_blog._core.interceptor.IpBlockInterceptor;
 import com.tenco.spring_blog._core.interceptor.LoginInterceptor;
+import com.tenco.spring_blog._core.interceptor.SessionUserModelInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -16,12 +17,16 @@ public class WebMvcConfig implements WebMvcConfigurer {
     // 로그인 인터셉트와의 관계는? -> 연관관계? 의존관계? -> 연관관계로 만들어보자.
     private final IpBlockInterceptor ipBlockInterceptor;
     private final LoginInterceptor loginInterceptor;
-
+    private final SessionUserModelInterceptor sessionUserModelInterceptor;
 
     // loginInterceptor를 시스템에 등록
     // 내가 정의한 인터셉트를 설정 클래스에 등록할 수 있다.
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
+
+        //
+        registry.addInterceptor(sessionUserModelInterceptor)
+                        .addPathPatterns("/**"); //모든 경로
 
         // 1. 차단한 IP 접근 경우 접속을 막기 위한 인터셉터
         registry.addInterceptor(ipBlockInterceptor)

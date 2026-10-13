@@ -3,12 +3,15 @@
 <div class="container p-5">
 
     {{! 수정, 삭제 버튼: 오른쪽 정렬 }}
+
+    {{#isOwner}}
     <div class="d-flex justify-content-end">
         <a href="/board/{{board.id}}/update" class="btn btn-warning me-1">수정</a>
         <form action="/board/{{board.id}}/delete" method="post">
             <button class="btn btn-danger">삭제</button>
         </form>
     </div>
+    {{/isOwner}}
 
     <div class="d-flex justify-content-end">
         <b>작성자</b> : {{board.username}}
