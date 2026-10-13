@@ -49,11 +49,10 @@ public class UserController {
 
         // 입력데이터 검증 -> 유효성 검사
         loginDto.Validate();
-        User user = userService.login(loginDto);
+        SessionUserDto sessionUserDto = userService.login(loginDto);
 
         // 보안상의 이유로 비밀번호 정보는 저장하고 싶지 않은 경우 -> 있어야 함
-        user.setPassword(null);
-        session.setAttribute(Define.SESSION_USER, user);
+        session.setAttribute(Define.SESSION_USER, sessionUserDto);
 
         // 성공시 메인페이지로 리다이렉트
         return "redirect:/";
@@ -61,18 +60,18 @@ public class UserController {
 
 
     // 주소 설계
-    // GET http://localhost:8080/user/update
+    // GET http://localhost:8080/user/update (화면 요청)
     @GetMapping("/user/update")
     public String updateForm(Model model, HttpSession session) {
 
         // 인증 검사
-        User sessionUser = (User) session.getAttribute(Define.SESSION_USER);
-        User user = userService.findById(sessionUser.getId());
-        model.addAttribute("user", user);
+        SessionUserDto sessionUserDto = (SessionUserDto) session.getAttribute(Define.SESSION_USER);
+        UserResponse.updateFormDto updateFormDto = userService.findUpdateForm(sessionUserDto.getId());
+        model.addAttribute("user", updateFormDto);
         return "user/update-form";
     }
 
-    // 주소 설계
+    // 주소 설계 - 회원 정보에 대한 수정 정보 요청
     // POST http://localhost:8080/user/update
     @PostMapping("/user/update")
     public String update(Model model, HttpSession session, UserRequest.UpdateDto updateDto) {
@@ -81,12 +80,12 @@ public class UserController {
         updateDto.Validate();
 
         // 2. 인증 검사 -> 로그인이 되어있는데 해야하나? -> 세션 유효기간이 만료되었을 때 필요
-        User sessionUser = (User) session.getAttribute(Define.SESSION_USER);
-        User updateUser = userService.updateById(sessionUser.getId(), updateDto);
-        // 3. 세션 동기화 -> 수정된 비밀번호 정보를 업데이트하여 세션에 반영
-        //동기화 처리
-        updateUser.setPassword(null);
-        session.setAttribute(Define.SESSION_USER, updateUser);
+        SessionUserDto sessionUserDto = (SessionUserDto) session.getAttribute(Define.SESSION_USER);
+        SessionUserDto updateSessionUserDto = userService.updateById(sessionUserDto.getId(), updateDto);
+
+        // 3. 세션 동기화 처리 -> 수정된 비밀번호 정보를 업데이트하여 세션에 반영
+        session.setAttribute(Define.SESSION_USER, updateSessionUserDto);
+
         // 4. 성공 후 메인페이지로 리다이렉트
         return "redirect:/";
     }

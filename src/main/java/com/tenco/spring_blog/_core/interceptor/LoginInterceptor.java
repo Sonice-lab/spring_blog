@@ -2,6 +2,7 @@ package com.tenco.spring_blog._core.interceptor;
 
 import com.tenco.spring_blog._core.error.Exception401;
 import com.tenco.spring_blog._core.util.Define;
+import com.tenco.spring_blog.user.SessionUserDto;
 import com.tenco.spring_blog.user.User;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -17,7 +18,7 @@ public class LoginInterceptor implements HandlerInterceptor {
     // 컨트롤러단에 들어가기 전에 동작시킬 수 있는 핸들러
     // (단, 설정 클래스에 등록되어있고, 지정한 URL 패턴에 해당할 때만 동작)
     // 리턴 타입이 TRUE일 경우 컨트롤러 안으로 들여보낸다.
-    // 리턴 타입이 FALSE일 경우 컨틀롤러 안으로 들어갈 수 없다.
+    // 리턴 타입이 FALSE일 경우 컨트롤러 안으로 들어갈 수 없다.
     // 로그인이 되어야지만 접근할 수 있다.
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -26,8 +27,8 @@ public class LoginInterceptor implements HandlerInterceptor {
         // request.getSession(): 로그인하지 않은 사용자에게도  빈 세션이 생성된다.
         HttpSession session = request.getSession(false);
         // 코드를 줄여보자.
-        User sessionUser = (session == null) ? null : (User) session.getAttribute(Define.SESSION_USER);
-        if(sessionUser == null) {
+        SessionUserDto sessionUserDto = (session == null) ? null : (SessionUserDto) session.getAttribute(Define.SESSION_USER);
+        if(sessionUserDto == null) {
             throw new Exception401("로그인 먼저 진행해주세요.");
             // 로그인 페이지로 바로 이동하게 하고싶음
 

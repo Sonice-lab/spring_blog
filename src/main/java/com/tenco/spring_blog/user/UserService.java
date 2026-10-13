@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
  * C -> S -> R -> DB
  */
 
-
+// 엔티티 DTO로 내리기 위한 수정 완료
 @Slf4j
 @RequiredArgsConstructor
 @Transactional(readOnly = true) //기본적으로 읽기 전용 트랜잭션 설정
@@ -36,7 +36,7 @@ public class UserService {
      */
     // 회원가입 기능
     @Transactional // 쓰기 작업이므로 트랜잭션 활성화
-    public User join(UserRequest.JoinDto joinDto) {
+    public UserResponse.JoinDto join(UserRequest.JoinDto joinDto) {
         log.info("회원 가입 서비스 처리 시작 - 사용자명: {}", joinDto.getUsername());
 
         // 비즈니스 조직
@@ -59,7 +59,7 @@ public class UserService {
         User savedUser = userJpaRepository.save(joinDto.toEntity());
         log.info("회원 가입 서비스 처리 완료 - 사용자명: {}, ID: {} ",
                 joinDto.getUsername(), savedUser.getId());
-        return savedUser;
+        return new UserResponse.JoinDto(savedUser);
     }
 
     /**
@@ -69,7 +69,7 @@ public class UserService {
      * @return 로그인된 사용자 정보
      */
     // 로그인 처리 - 조회
-    public User login(UserRequest.LoginDto loginDto) {
+    public SessionUserDto login(UserRequest.LoginDto loginDto) {
         log.info("로그인 서비스 처리 시작 - 사용자명: {}", loginDto.getUsername());
 
         User user = userJpaRepository.findByUsernameAndPassword(
@@ -80,20 +80,20 @@ public class UserService {
                 });
 
         log.info("로그인 성공 - 사용자명: {}", loginDto.getUsername());
-        return user;
+        return new SessionUserDto(user);
     }
 
     /**
-     * 사용자 정보 조회
-     * @param id 사용자 pk
-     * @return 사용자 정보
+     * 회원 정보 수정 화면:  화면에 필요한 값만 담는 DTO 반환
+     * @param userId
+     * @return
      */
-    // 사용자 정보 조회 기능
-    public User findById(Long id) {
-        log.info("사용자 정보 조회 - id: {}", id);
-        return userJpaRepository.findById(id).orElseThrow(() ->
-                new Exception404("사용자를 찾을 수 없습니다."));
+    public UserResponse.updateFormDto findUpdateForm(Long userId) {
+        User user = findById(userId);
+        return new UserResponse.updateFormDto(user);
     }
+
+
 
     /**
      * 회원정보 수정처리(Dirty Checking 활용)
@@ -102,12 +102,27 @@ public class UserService {
      * @return 수정된 사용자 정보
      */
     // 사용자 정보 수정 기능
+    // 세션 동기화용 DTO 반환
     @Transactional
-    public User updateById(Long id, UserRequest.UpdateDto updateDto) {
+    public SessionUserDto updateById(Long id, UserRequest.UpdateDto updateDto) {
         // 유저 조회
         User user = findById(id);
         // 더티체킹
         user.update(updateDto.getPassword());
-        return user;
+        return new SessionUserDto(user);
+    }
+
+
+    /**
+     * 사용자 정보 조회
+     * @param id 사용자 pk
+     * @return 사용자 정보
+     */
+    // 사용자 정보 조회 기능
+    // 캡슐화 - 서비스 안에서만 쓰는 조회용 메서드
+    private User findById(Long id) {
+        log.info("사용자 정보 조회 - id: {}", id);
+        return userJpaRepository.findById(id).orElseThrow(() ->
+                new Exception404("사용자를 찾을 수 없습니다."));
     }
 }
