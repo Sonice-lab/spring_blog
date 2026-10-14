@@ -30,7 +30,7 @@ public class LoginInterceptor implements HandlerInterceptor {
         SessionUserDto sessionUserDto = (session == null) ? null : (SessionUserDto) session.getAttribute(Define.SESSION_USER);
         if(sessionUserDto == null) {
             throw new Exception401("로그인 먼저 진행해주세요.");
-            // 로그인 페이지로 바로 이동하게 하고싶음
+           // 로그인 페이지로 바로 이동하게 하고싶음
 
         }
         return true;
