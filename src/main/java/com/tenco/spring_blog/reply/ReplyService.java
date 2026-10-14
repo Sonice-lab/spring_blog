@@ -72,6 +72,6 @@ public class ReplyService {
         replyJpaRepository.delete(reply);
 
     }
+    // todo - 추후 광고성 댓글 전체 지우기 기능 구현
 
-    //todo - 3. 해당 게시글이 삭제되었을 때 관련 댓글도 모두 삭제
 }

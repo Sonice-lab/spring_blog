@@ -6,6 +6,7 @@ import com.tenco.spring_blog.user.SessionUserDto;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -26,6 +27,20 @@ public class ReplyController {
         replyService.save(saveDto, sessionUserDto);
         // 4. 저장이 잘 끝나면 화면에 보여주어야 함 -> 리다이렉트 처리 -> PRG 설계
         return "redirect:/board/" + saveDto.getBoardId();
+    }
+
+    // 댓글 삭제
+    // 주소설계: http://localhost:8080/reply/{id}/delete
+    @PostMapping("/reply/{id}/delete")
+    public String delete(@PathVariable Long id, @RequestParam(name = "boardId") Long boardId, HttpSession session) {
+        // 1. 인증 검사 - 로그인 인터셉터가 하고 있음
+        // 2. 유효성 검사 - 필요없음
+        // 3. 서비스에 위임
+        // 4. 리턴 - 해당 게시글
+        SessionUserDto sessionUserDto = (SessionUserDto) session.getAttribute(Define.SESSION_USER);
+        replyService.deleteById(id, sessionUserDto);
+        // PRG 패턴 구현
+        return "redirect:/board/" + boardId ;
     }
 
 }
