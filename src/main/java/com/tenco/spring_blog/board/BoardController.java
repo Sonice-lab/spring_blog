@@ -2,6 +2,8 @@ package com.tenco.spring_blog.board;
 
 import com.tenco.spring_blog._core.error.Exception403;
 import com.tenco.spring_blog._core.util.Define;
+import com.tenco.spring_blog.reply.ReplyResponse;
+import com.tenco.spring_blog.reply.ReplyService;
 import com.tenco.spring_blog.user.SessionUserDto;
 import com.tenco.spring_blog.user.User;
 import jakarta.servlet.http.HttpSession;
@@ -22,6 +24,7 @@ public class BoardController {
 
     //DI 처리
     private final BoardService boardService;
+    private final ReplyService replyService;
 
     // private final HttpSession session; -> 프로그램 구현시 무거워져서 권장하지 않음 -> 의존 관계로 활용하기
     @GetMapping({"/", "/board/list"})
@@ -39,11 +42,18 @@ public class BoardController {
         BoardResponse.DetailDto detailDto = boardService.findById(id);
         // 데이터베이스 조회가 필요한가?
         SessionUserDto sessionUserDto = (SessionUserDto) session.getAttribute(Define.SESSION_USER);
+        // 로그인하지 않았으면 null 설정
+        Long sessionUserId = (sessionUserDto == null) ? null : sessionUserDto.getId();
+
         // 로그인 완료했고, 작성자 본인일 때만 수정/삭제 버튼 표시
         boolean isOwner = sessionUserDto != null && detailDto.getUserId().equals(sessionUserDto.getId());
 
+        // 댓글 목록 조회
+        List<ReplyResponse.ListDto> replyList = replyService.findAllByBoardId(id, sessionUserId);
+
         model.addAttribute("board", detailDto);
         model.addAttribute("isOwner", isOwner);
+        model.addAttribute("replyList", replyList);
         return "board/detail";
     }
 

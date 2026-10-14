@@ -38,24 +38,22 @@
         </div>
         <div class="card-footer"><b>댓글 목록</b></div>
         <div class="list-group">
-            <div class="list-group-item d-flex justify-content-between align-items-center">
-                <div class="d-flex">
-                    <div class="px-1 me-1 bg-primary text-white rounded">박지훈</div>
-                    <div>댓글 내용입니다</div>
+            <!--댓글 1 시작-->
+            {{#replyList}}
+                <div class="list-group-item d-flex justify-content-between align-items-center">
+                    <div class="d-flex">
+                        <div class="px-1 me-1 bg-primary text-white rounded">{{username}}</div>
+                        <div>{{comment}}</div>
+                    </div>
+                    {{#isOwner}}
+                    <form action="/reply/1/delete" method="post">
+                        <button class="btn"><i class="fa-solid fa-trash"></i></button>
+                    </form>
+                    {{/isOwner}}
                 </div>
-                <form action="/reply/1/delete" method="post">
-                    <button class="btn"><i class="fa-solid fa-trash"></i></button>
-                </form>
-            </div>
-            <div class="list-group-item d-flex justify-content-between align-items-center">
-                <div class="d-flex">
-                    <div class="px-1 me-1 bg-primary text-white rounded">이서연</div>
-                    <div>댓글 내용입니다</div>
-                </div>
-                <form action="/reply/2/delete" method="post">
-                    <button class="btn"><i class="fa-solid fa-trash"></i></button>
-                </form>
-            </div>
+            {{/replyList}}
+            <!--댓글 1 종료-->
+
         </div>
     </div>
 </div>

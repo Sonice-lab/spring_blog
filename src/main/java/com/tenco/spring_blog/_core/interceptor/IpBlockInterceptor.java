@@ -16,7 +16,7 @@ import java.util.Set;
 public class IpBlockInterceptor implements HandlerInterceptor {
 
     // 차단할 IP리스트(DB나 설정 파일에서 관리하는 것을 권장)
-    private static final Set<String> BLOCKED_IPS = Set.of("192.168.5.10", "192.168.7.230");
+    private static final Set<String> BLOCKED_IPS = Set.of("192.168.7.230");
 
     //컨트롤러 요청 전 가로채기
     @Override

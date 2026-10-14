@@ -21,8 +21,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception400.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public String ex400(Exception400 e, HttpServletRequest request, Model model) {
-        log.warn("=== 400 Bad Request 에러 발생");
-        log.warn("요청 URL: {}", request.getRequestURI());
+        log.warn("=== 400 Bad Request 에러 발생 ===");
+        log.warn("요청 URL: {}", request.getRequestURL());
         log.warn("에러메세지: {}", e.getMessage());
         log.warn("예외클래스: {}", e.getClass().getSimpleName());
 
@@ -36,8 +36,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception401.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public String ex401(Exception401 e, HttpServletRequest request, RedirectAttributes rttr) {
-        log.warn("=== 401 Unauthorized 에러 발생");
-        log.warn("요청 URL: {}", request.getRequestURI());
+        log.warn("=== 401 Unauthorized 에러 발생 ===");
+        log.warn("요청 URL: {}", request.getRequestURL());
         log.warn("인증 오류: {}", e.getMessage());
         log.warn("예외클래스: {}", e.getClass().getSimpleName());
 
@@ -45,6 +45,25 @@ public class GlobalExceptionHandler {
 
         // return "err/401";
         return "redirect:/login";
+    }
+
+    // 특정 예외 타입이 발생했을 때 실행될 메서드로 지정
+    @ExceptionHandler(UnAuthorizedException.class)
+    @ResponseBody // 화면을 뽑지 않고 데이터로 반환
+    public String exUnauthorized(UnAuthorizedException e, HttpServletRequest request) {
+        log.warn("=== 401(Data 반환) Unauthorized 에러 발생 ===");
+        log.warn("요청 URL: {}", request.getRequestURL());
+        log.warn("인증 오류: {}", e.getMessage());
+        log.warn("예외클래스: {}", e.getClass().getSimpleName());
+
+        String msg = e.getMessage().replace("'", "\\'"); //따옴표 깨짐 방지
+
+        return """
+                <script>
+                    alert('%s');
+                    location.href = '/login'
+                </script>
+                """.formatted(msg);
     }
 
     // 특정 예외 타입이 발생했을 때 실행될 메서드로 지정
@@ -65,8 +84,8 @@ public class GlobalExceptionHandler {
     @ResponseBody
     @ResponseStatus(HttpStatus.FORBIDDEN) //상태코드 403 지정(없으면 통신 성공으로 200으로 나감)
     public String ex403(Exception403 e, HttpServletRequest request, Model model) {
-        log.warn("=== 403 Forbidden 에러 발생");
-        log.warn("요청 URL: {}", request.getRequestURI());
+        log.warn("=== 403 Forbidden 에러 발생 ===");
+        log.warn("요청 URL: {}", request.getRequestURL());
         log.warn("권한 오류: {}", e.getMessage());
         log.warn("예외클래스: {}", e.getClass().getSimpleName());
 
@@ -84,8 +103,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception404.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public String ex404(Exception404 e, HttpServletRequest request, Model model) {
-        log.warn("=== 404 Not Found 에러 발생");
-        log.info("요청 URL: {}", request.getRequestURI());
+        log.warn("=== 404 Not Found 에러 발생 ===");
+        log.info("요청 URL: {}", request.getRequestURL());
         log.info("에러메세지: {}", e.getMessage());
         log.info("예외클래스: {}", e.getClass().getSimpleName());
 
@@ -99,8 +118,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception500.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public String ex500(Exception500 e, HttpServletRequest request, Model model) {
-        log.error("=== 500 Internal Server Error 에러 발생");
-        log.error("요청 URL: {}", request.getRequestURI());
+        log.error("=== 500 Internal Server Error 에러 발생 ===");
+        log.error("요청 URL: {}", request.getRequestURL());
         log.error("서버 오류: {}", e.getMessage());
         log.error("스택 트레이스: ", e); // 전체 스택 트레이스 포함
 
@@ -114,7 +133,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public String ex500(RuntimeException e, HttpServletRequest request, Model model) {
         log.error("=== 예상치 못한 런타입 에러 발생 ===");
-        log.error("요청 URL: {}", request.getRequestURI());
+        log.error("요청 URL: {}", request.getRequestURL());
         log.error("에러 타입: {}", e.getClass().getSimpleName());
         log.error("에러메세지: {}", e.getMessage());
         log.error("스택 트레이스: ", e); // 전체 스택 트레이스 포함
