@@ -11,9 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -27,10 +25,14 @@ public class BoardController {
     private final ReplyService replyService;
 
     // private final HttpSession session; -> 프로그램 구현시 무거워져서 권장하지 않음 -> 의존 관계로 활용하기
+    // http://localhost:8080/?page=1
     @GetMapping({"/", "/board/list"})
-    public String list(Model model) {
-        List<BoardResponse.ListDto> boardList = boardService.findAll();
-        model.addAttribute("boardList", boardList);
+    public String list(@RequestParam(name = "page", defaultValue = "1") int page,
+                       @RequestParam(name = "size", defaultValue = "3") int size,
+                       Model model) {
+        // 연산하기 위해 값을 던져야 하다.
+        BoardResponse.PageDto pageDto = boardService.findAllPage(page, size);
+        model.addAttribute("boardPage", pageDto);
         return "board/list";
     }
 
