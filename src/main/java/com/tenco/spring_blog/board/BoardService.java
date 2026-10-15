@@ -78,7 +78,7 @@ public class BoardService {
      *
      * @return 게시글 목록(작성자 정보 포함)
      */
-    public BoardResponse.PageDto findAllPage(int page, int size) {
+    public BoardResponse.PageDto findAllPage(int page, int size, String keyword) {
         log.info("게시글 목록 조회 시작");
 
         // 1. 1부터 시작하는 번호를 0부터로 변환(0 이하가 들어와도 0으로 보장)
@@ -93,23 +93,26 @@ public class BoardService {
 //        int step1 = Math.min(50, size);
 //        validSize = Math.max(1, step1);
 
-        int validSize = Math.max(1, Math.min(50,size));
+        int validSize = Math.max(1, Math.min(50, size));
 
         // 최신글이 먼저 오도록 아이디 내림차순 정렬(주문서 생성)
         Pageable pageable = PageRequest.of(pageIndex, validSize, Sort.by(Sort.Direction.DESC, "id"));
+        // isBlank: null이 아닌 상태에서 공백 제거 후 개수 확인
+        Page<Board> boardPage;
+        if (keyword == null || keyword.isBlank()) {
+            boardPage = boardJpaRepository.findAllJoinUser(pageable);
+        } else {
+            boardPage = boardJpaRepository.findAllKeywordJoinUser(pageable, keyword);
+        }
 
-        // 페이저블 객체인 주문서를 넣어야 한다.
-        // 페이징 처리가 된 게시글 목록 조회 요청(주문 결과 Page)
-        Page<Board> boardPage = boardJpaRepository.findAllJoinUser(pageable);
-
-        // 조회 후 트랜잭션 안에서 응답 DTO로 변환 처리
-        // 우리는 아까
-        BoardResponse.PageDto pageDto = new BoardResponse.PageDto(boardPage);
-
-        // 방법 1 메서드 참조 문법
-        return pageDto;
+        return new BoardResponse.PageDto(boardPage);
 
     }
+
+    // 사용자가 검색 키워드라는 key값을 만들것임
+    // 빈 값으로 던지지 않았다면 서비스측에서 분리
+    // 아무것도 안 넣었다면 ->
+
 
     /**
      * 게시글 수정 화면 요청 (인가 검사) - 권한 체크
