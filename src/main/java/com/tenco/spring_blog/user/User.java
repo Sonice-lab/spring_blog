@@ -44,7 +44,7 @@ public class User {
     // 회원 탈퇴를 할 경우, 쓰레기 데이터가 생기는데, 이를 한번에 정리하기 위한 설계
     // 사용자의 역할 목록(User 1:  UserRole N 단방향 설계)
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false) //fk는 자식테이블에 생성
     private List<UserRole> roles = new ArrayList<>();
 
 

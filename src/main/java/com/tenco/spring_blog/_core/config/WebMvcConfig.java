@@ -1,5 +1,6 @@
 package com.tenco.spring_blog._core.config;
 
+import com.tenco.spring_blog._core.interceptor.AdminInterceptor;
 import com.tenco.spring_blog._core.interceptor.IpBlockInterceptor;
 import com.tenco.spring_blog._core.interceptor.LoginInterceptor;
 import com.tenco.spring_blog._core.interceptor.SessionUserModelInterceptor;
@@ -22,6 +23,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
     private final IpBlockInterceptor ipBlockInterceptor;
     private final LoginInterceptor loginInterceptor;
     private final SessionUserModelInterceptor sessionUserModelInterceptor;
+    private final AdminInterceptor adminInterceptor;
 
     // 업로드 폴더의 파일을 /images/** 주소로 제공
     @Override
@@ -59,9 +61,13 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 // 인터셉터가 동작할 URL 패턴을 지정
                 .addPathPatterns("/user/**", "/board/**", "/reply/**", "/admin/**")
                 // 인터셉터에서 제외할 URL 패턴을 지정할 수 있다.
-                .excludePathPatterns("/board/list", "/board/{id:\\d+}");
+                .excludePathPatterns("/user/login", "/user/join", "/board/list", "/board/{id:\\d+}");
         // \\d+는 정규 표현식으로 1개 이상의 숫자를 의미
         // 예시) /board/1, /board/123 (상세보기)는 로그인 없어도 접근 가능
         // /board/1/update  처럼 뒤에 경로가 더 붙는 경우 제외대상이 아니게 된다.
+
+        // 3. [인가] 일반 USER 계정의 관리자 페이지 접근 차단 인터셉터(새로 추가!)
+        registry.addInterceptor(adminInterceptor)
+                .addPathPatterns("/admin/**");
     }
 }
