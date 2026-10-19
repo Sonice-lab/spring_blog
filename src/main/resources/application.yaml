@@ -4,6 +4,10 @@ spring:
   mustache:
     servlet:
       expose-session-attributes: false #머스태치 파일에서 세션에 담은 값을 바로 사용 가능
+  servlet:
+    multipart:
+      max-file-size: 10MB   # 파일 하나의 최대 크기
+      max-request-size: 11MB   # 요청 전체(파일 + 입력값)의 최대 크기
   profiles:
     active: local
 

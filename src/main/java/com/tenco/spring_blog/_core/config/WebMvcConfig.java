@@ -3,10 +3,14 @@ package com.tenco.spring_blog._core.config;
 import com.tenco.spring_blog._core.interceptor.IpBlockInterceptor;
 import com.tenco.spring_blog._core.interceptor.LoginInterceptor;
 import com.tenco.spring_blog._core.interceptor.SessionUserModelInterceptor;
+import com.tenco.spring_blog._core.util.FileUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import java.nio.file.Paths;
 
 @RequiredArgsConstructor // 의존성 주입
 // @Component // 독립적으로 돌아가는 객체를 의미
@@ -18,6 +22,24 @@ public class WebMvcConfig implements WebMvcConfigurer {
     private final IpBlockInterceptor ipBlockInterceptor;
     private final LoginInterceptor loginInterceptor;
     private final SessionUserModelInterceptor sessionUserModelInterceptor;
+
+    // 업로드 폴더의 파일을 /images/** 주소로 제공
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        // 업로드 폴더 경로를 file:///.... 형식의 주소로 변환(운영체제에 맞게 자동 변환)
+        String location = Paths.get(FileUtil.UPLOAD_DIR).toUri().toString();
+
+        // 윈도우 기준 예시 -> C:\Users\사용자명\blog_uploads\ -> 이 주소로 바꿈
+        // 방어적 코드: 폴더 위치는 반드시 /로 끝나야 그 안의 파일을 찾을 수 있음
+        if(!location.endsWith("/")) {
+            location = location + "/";
+        }
+
+        // 핵심 키워드 ->
+        registry.addResourceHandler("/images/**")
+                .addResourceLocations(location);
+
+    }
 
     // loginInterceptor를 시스템에 등록
     // 내가 정의한 인터셉트를 설정 클래스에 등록할 수 있다.

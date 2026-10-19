@@ -4,17 +4,45 @@
     <div class="card">
         <div class="card-header"><b>회원정보 수정</b></div>
         <div class="card-body">
-            <form action="/user/update" method="post">
+
+            <div class="text-center mb-4">
+                {{! 프로필 이미지가 있을 경우}}
+                {{#user.profileImage}}
+                    <img src="/images/{{user.profileImage}}" alt="" class="rounded-circle boarder"
+                         style="width: 200px; height: 200px; object-fit: cover">
+                    {{!프로필 삭제 기능}}
+                    <form action="/user/profile-image/delete" method="post" class="mt-2">
+                        <button type="submit" class="btn btn-sm btn-danger"
+                                onclick="return confirm('사진을 삭제하시겠습니까?');">프로필 사진 삭제
+                        </button>
+                    </form>
+                {{/user.profileImage}}
+                {{! 프로필 이미지가 없을 경우}}
+                {{^user.profileImage}}
+                    <div class="rounded-circle boarder bg-secondary d-inline-flex align-items-center justify-content-center"
+                         style="width: 200px; height: 200px;">
+                        <span class="text-white">프로필 사진 없음</span>
+                    </div>
+                {{/user.profileImage}}
+            </div>
+
+            <form action="/user/update" method="post" enctype="multipart/form-data">
                 <div class="mb-3">
                     <input type="text" class="form-control" value="{{user.username}}" readonly>
                 </div>
                 <div class="mb-3">
-                    <input type="password" class="form-control" placeholder="새 비밀번호" name="password">
+                    <input type="password" class="form-control" placeholder="변경할 때만 입력하세요." name="password">
                 </div>
                 <div class="mb-3">
                     <input type="email" class="form-control" name="email" value="{{user.email}}" readonly>
                 </div>
+
+                <div class="mb-3">
+                    <input type="file" class="form-control" name="profileImage" accept="image/**">
+                    <small>새 사진을 고르지 않으면 지금 사진이 그대로 적용 유지됨</small>
+                </div>
                 <button class="btn btn-primary form-control">수정 완료</button>
+                <a href="/user/detail" class="btn btn-secondary my-2">취소</a>
             </form>
         </div>
     </div>

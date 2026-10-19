@@ -2,6 +2,7 @@ package com.tenco.spring_blog.user;
 
 import com.tenco.spring_blog._core.error.Exception400;
 import com.tenco.spring_blog._core.error.Exception404;
+import com.tenco.spring_blog._core.util.FileUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -55,8 +56,11 @@ public class UserService {
                 });
 
 
-        // 3. 데이터 저장
-        User savedUser = userJpaRepository.save(joinDto.toEntity());
+        // 3. 프로필 이미지 저장 (새롭게 생긴 파일 이름이 리턴됨)
+        String profileImage = FileUtil.saveImage(joinDto.getProfileImage());
+
+        // 4. 프로필 파일 이름과 회원 정보 저장
+        User savedUser = userJpaRepository.save(joinDto.toEntity(profileImage));
         log.info("회원 가입 서비스 처리 완료 - 사용자명: {}, ID: {} ",
                 joinDto.getUsername(), savedUser.getId());
         return new UserResponse.JoinDto(savedUser);
@@ -85,6 +89,7 @@ public class UserService {
 
     /**
      * 회원 정보 수정 화면:  화면에 필요한 값만 담는 DTO 반환
+     *
      * @param userId
      * @return
      */
@@ -94,10 +99,10 @@ public class UserService {
     }
 
 
-
     /**
      * 회원정보 수정처리(Dirty Checking 활용)
-     * @param id 사용자 pk
+     *
+     * @param id        사용자 pk
      * @param updateDto 수정할 사용자 정보
      * @return 수정된 사용자 정보
      */
@@ -105,16 +110,32 @@ public class UserService {
     // 세션 동기화용 DTO 반환
     @Transactional
     public SessionUserDto updateById(Long id, UserRequest.UpdateDto updateDto) {
-        // 유저 조회
+        // 1. 유저 조회
         User user = findById(id);
-        // 더티체킹
-        user.update(updateDto.getPassword());
+
+        // 2. 더티체킹 -> 비밀번호 조회
+        if (updateDto.hasPassword()) {
+            user.update(updateDto.getPassword());
+        }
+
+        // 이미지 변경 -> 새 이미지를 골랐을 때만 교체
+        // null이거나, 파일 데이터가 있거나 두 가지 경우가 있다.
+        if (updateDto.hasProfileImage()) {
+            String newImage = FileUtil.saveImage(updateDto.getProfileImage());
+            String oldImage = user.getProfileImage();
+            user.updateProfileImage(newImage); // DB에는 새 파일 이름 변경 감지
+            // 기존 파일은 서버측 폴더에서 삭제 처리
+            FileUtil.deleteFile(oldImage);
+        }
+
+        // 4. 세션 동기화용 DTO 변환
         return new SessionUserDto(user);
     }
 
 
     /**
      * 사용자 정보 조회
+     *
      * @param id 사용자 pk
      * @return 사용자 정보
      */
@@ -124,5 +145,21 @@ public class UserService {
         log.info("사용자 정보 조회 - id: {}", id);
         return userJpaRepository.findById(id).orElseThrow(() ->
                 new Exception404("사용자를 찾을 수 없습니다."));
+    }
+
+    // 마이페이지 조회 기능
+    // 조회라서 트랜잭션 걸 필요 없음
+    public UserResponse.DetailDto findDetail(Long userId) {
+        User user = findById(userId);
+        return new UserResponse.DetailDto(user);
+    }
+
+    @Transactional
+    public void deleteProfileImage(Long userId) {
+        User user = findById(userId);
+        String oldImage = user.getProfileImage();
+        user.updateProfileImage(null); // 1. DB에 파일 이름 비우기(변경 감지)
+        FileUtil.deleteFile(oldImage); // 2. 폴더 실제 파일 삭제
+
     }
 }
