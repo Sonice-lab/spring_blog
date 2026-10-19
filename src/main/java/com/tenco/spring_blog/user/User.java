@@ -1,13 +1,17 @@
 package com.tenco.spring_blog.user;
+
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor // 기본 생성자 필수(JPA 엔티티 생성자)
 @AllArgsConstructor
-@Table(name="user_tb")
+@Table(name = "user_tb")
 @Entity //자동 테이블 생성
 @Data
 
@@ -34,6 +38,14 @@ public class User {
 
     private String profileImage;
 
+    // [cascade, orphanRemoval]
+    // 두 옵션은 부모 쪽의 @OneToMany 컬렉션에 붙인다.
+    // User가 List<UserRole>을 가지고 있으므로 사용할 수 있다.
+    // 회원 탈퇴를 할 경우, 쓰레기 데이터가 생기는데, 이를 한번에 정리하기 위한 설계
+    // 사용자의 역할 목록(User 1:  UserRole N 단방향 설계)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "user_id", nullable = false)
+    private List<UserRole> roles = new ArrayList<>();
 
 
     // 편의성을 위한 생성자 만들기
@@ -43,7 +55,7 @@ public class User {
         this.username = username;
         this.password = password;
         this.email = email;
-        this.profileImage  = profileImage;
+        this.profileImage = profileImage;
     }
 
     // 편의 메서드 1. 회원 정보 수정 - 더티체킹 (변경 감지용)
@@ -56,5 +68,29 @@ public class User {
     // 트랜잭션 안에서 호출하면 더티 체킹 발생
     public void updateProfileImage(String profileImage) {
         this.profileImage = profileImage;
+    }
+
+    // 편의 메서드 3. 역할 추가 메서드(회원 가입 시 기본 USER 부여, 관리자는 직접 지정)
+    public void addRole(Role role) {
+        // 이미 가진 역할이면 추가하지 않음 (코드에서 1차 방어)
+        if (hasRole(role)) {
+            return;
+        }
+        this.roles.add(UserRole.builder().role(role).build());
+    }
+
+    // 가. 해당 역할을 가지고 있는 지 확인
+    public boolean hasRole(Role role) {
+        for (UserRole u : this.roles) {
+            if (u.getRole() == role) {
+                return true; // 찾으면 바로 true
+            }
+        }
+        return false; // 끝까지 없으면 false
+    }
+
+    // 편의 메서드 3. 로그인한 사용자의 관리자 여부 확인 메서드
+    public boolean isAdmin() {
+        return hasRole(Role.ADMIN); // 고정 값: 관리자 여부인지만 확인 후 true, false 반환
     }
 }

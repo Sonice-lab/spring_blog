@@ -5,6 +5,13 @@ INSERT INTO user_tb (username, password, email, created_at) VALUES ('minsu',   '
 INSERT INTO user_tb (username, password, email, created_at) VALUES ('jihun',   '1234', 'jihun@tenco.com',   NOW());
 INSERT INTO user_tb (username, password, email, created_at) VALUES ('seoyeon', '1234', 'seoyeon@tenco.com', NOW());
 
+-- 1-1. 사용자 역할 (admin 은 관리자이면서 일반 사용자)
+INSERT INTO user_role_tb (user_id, role) VALUES (1, 'ADMIN');
+INSERT INTO user_role_tb (user_id, role) VALUES (1, 'USER');
+INSERT INTO user_role_tb (user_id, role) VALUES (2, 'USER');
+INSERT INTO user_role_tb (user_id, role) VALUES (3, 'USER');
+INSERT INTO user_role_tb (user_id, role) VALUES (4, 'USER');
+
 -- 2. 게시글 (user_id 는 위 사용자의 id)
 -- admin(1)
 INSERT INTO board_tb (title, content, user_id, created_at) VALUES ('블로그 개설을 환영합니다', '새 블로그가 문을 열었습니다. 많은 참여 부탁드립니다.', 1, NOW());

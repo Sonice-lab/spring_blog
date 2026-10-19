@@ -55,12 +55,15 @@ public class UserService {
                     throw new Exception400("이미 사용중인 이메일입니다.");
                 });
 
-
-        // 3. 프로필 이미지 저장 (새롭게 생긴 파일 이름이 리턴됨)
         String profileImage = FileUtil.saveImage(joinDto.getProfileImage());
 
+        // 3. 프로필 이미지 저장 (새롭게 생긴 파일 이름이 리턴됨)
+        User user = joinDto.toEntity(profileImage);
+        // Role 기본값 할당
+        user.addRole(Role.USER);
+
         // 4. 프로필 파일 이름과 회원 정보 저장
-        User savedUser = userJpaRepository.save(joinDto.toEntity(profileImage));
+        User savedUser = userJpaRepository.save(user);
         log.info("회원 가입 서비스 처리 완료 - 사용자명: {}, ID: {} ",
                 joinDto.getUsername(), savedUser.getId());
         return new UserResponse.JoinDto(savedUser);
