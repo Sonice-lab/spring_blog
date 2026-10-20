@@ -2,6 +2,7 @@ package com.tenco.spring_blog.user;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
@@ -47,15 +48,22 @@ public class User {
     @JoinColumn(name = "user_id", nullable = false) //fk는 자식테이블에 생성
     private List<UserRole> roles = new ArrayList<>();
 
+    // 가입 경로를 나타냄(DB에는 LOCAL, KAKAO 문자열로 저장)
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    @ColumnDefault("'LOCAL'") // 문자열이므로 안에 작은 따옴표 필수!
+    private OAuthProvider provider;
+
 
     // 편의성을 위한 생성자 만들기
     // id와 createdAt은 자동으로 채워지므로 빌더에서 제외
     @Builder
-    public User(String username, String password, String email, String profileImage) {
+    public User(String username, String password, String email, String profileImage, OAuthProvider provider) {
         this.username = username;
         this.password = password;
         this.email = email;
         this.profileImage = profileImage;
+        this.provider = (provider == null) ? OAuthProvider.LOCAL : provider;
     }
 
     // 편의 메서드 1. 회원 정보 수정 - 더티체킹 (변경 감지용)
@@ -92,5 +100,18 @@ public class User {
     // 편의 메서드 3. 로그인한 사용자의 관리자 여부 확인 메서드
     public boolean isAdmin() {
         return hasRole(Role.ADMIN); // 고정 값: 관리자 여부인지만 확인 후 true, false 반환
+    }
+
+    // 편의 메서드 4.
+    public String getProfilePath() {
+        // 프로필 이미지가 없으면 null을 반환한다.
+        if (this.profileImage == null) {
+            return null;
+        }
+        // 프로필 이미지가 http로 시작한다면 image로 반환한다.
+        if (this.profileImage.startsWith("http")) {
+            return this.profileImage;
+        }
+        return "/images/" + this.profileImage;
     }
 }

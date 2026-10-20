@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 /**
  * 사전 기반 지식
  * 역할과 책임을 분리하는 방식
@@ -164,5 +166,39 @@ public class UserService {
         user.updateProfileImage(null); // 1. DB에 파일 이름 비우기(변경 감지)
         FileUtil.deleteFile(oldImage); // 2. 폴더 실제 파일 삭제
 
+    }
+
+    // 카카오 로그인: 처음이면 자동 회원가입, 이미 있으면 로그인
+    @Transactional
+    public SessionUserDto kakaoLogin(UserResponse.KakaoUserInfo kakaoUserInfo) {
+        // 1. 카카오 회원번호로 우리 서비스에 사용자명을 자동으로 만들어준다.
+        String username = "kakao_" + kakaoUserInfo.getId();
+
+        // 2. 이미 가입했는지 확인, 없으면 자동 회원가입
+        User user = userJpaRepository.findByUsername(username)
+                .orElseGet(() -> joinKakaoUser(username, kakaoUserInfo));
+
+        // 3. 혹시라도 같은 이름(동명이인)의 일반 회원이 있다면 카카오 사용자로 로그인 시키지 않음
+        if (user.getProvider() != OAuthProvider.KAKAO) {
+            throw new Exception400("이미 사용중인 사용자명입니다.");
+        }
+        // 트랜잭션 안에서 SessionUserDto 생성
+        return new SessionUserDto(user);
+    }
+
+    private User joinKakaoUser(String username, UserResponse.KakaoUserInfo kakaoUserInfo) {
+        User newUser = User.builder()
+                .username(username)
+                // 일반 로그인? 카카로 로그인?
+                // 카카오 사용자는 비밀번호로 로그인하지 않으므로 아무도 알 수 없는 값을 입력
+                .password(UUID.randomUUID().toString())
+                .profileImage(kakaoUserInfo.getProperties().getProfileImage())
+                .provider(OAuthProvider.KAKAO)
+                .email(username + "@kakao.com")
+                .build();
+
+        newUser.addRole(Role.USER);
+
+        return userJpaRepository.save(newUser);
     }
 }

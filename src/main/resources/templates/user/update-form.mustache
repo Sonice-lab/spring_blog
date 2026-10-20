@@ -8,7 +8,7 @@
             <div class="text-center mb-4">
                 {{! 프로필 이미지가 있을 경우}}
                 {{#user.profileImage}}
-                    <img src="/images/{{user.profileImage}}" alt="" class="rounded-circle boarder"
+                    <img src="{{user.profileImage}}" alt="" class="rounded-circle border"
                          style="width: 200px; height: 200px; object-fit: cover">
                     {{!프로필 삭제 기능}}
                     <form action="/user/profile-image/delete" method="post" class="mt-2">
@@ -19,7 +19,7 @@
                 {{/user.profileImage}}
                 {{! 프로필 이미지가 없을 경우}}
                 {{^user.profileImage}}
-                    <div class="rounded-circle boarder bg-secondary d-inline-flex align-items-center justify-content-center"
+                    <div class="rounded-circle border bg-secondary d-inline-flex align-items-center justify-content-center"
                          style="width: 200px; height: 200px;">
                         <span class="text-white">프로필 사진 없음</span>
                     </div>
