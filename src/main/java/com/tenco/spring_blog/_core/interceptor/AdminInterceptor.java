@@ -3,6 +3,7 @@ package com.tenco.spring_blog._core.interceptor;
 
 import com.tenco.spring_blog._core.error.Exception401;
 import com.tenco.spring_blog._core.error.Exception403;
+import com.tenco.spring_blog._core.error.UnAuthorizedException;
 import com.tenco.spring_blog._core.util.Define;
 import com.tenco.spring_blog.user.Role;
 import com.tenco.spring_blog.user.SessionUserDto;
@@ -19,6 +20,8 @@ import static com.tenco.spring_blog.user.Role.USER;
 
 // 직접 구현해보기
 // 관리자가 아니라면 해당 페이지 접근 차단!
+// 관리자 전용 페이지 보호
+// Admin컨트롤러에 들어오기 전에 처리
 @Component
 public class AdminInterceptor implements HandlerInterceptor {
 
@@ -26,19 +29,23 @@ public class AdminInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
-        // 1. 세션에 로그인 정보 가져오기
-        HttpSession session = request.getSession();
-        SessionUserDto sessionUserDto = (SessionUserDto) session.getAttribute(Define.SESSION_USER);
+        // 로그인 여부 확인
+        // 확인만 해야하므로 새로운 세션을 생성해서는 안됨 -> false 설정 필수
+        HttpSession session = request.getSession(false);
+        // nullpointerException 방어적 코드
+        SessionUserDto sessionUserDto = (session == null) ? null : (SessionUserDto) session.getAttribute(Define.SESSION_USER);
 
-        // 2. 비로그인 사용자 방어(LoginInterceptor를 먼저 거치더라도 안전을 위해 체크 권장)
-        if(sessionUserDto == null) {
-            throw new Exception401("로그인이 필요합니다.(관리자 전용)");
+        // 1. 로그인 확인은 사실 우리가 만들었던 LoginInterceptor가 먼저 처리
+        // 그러나, 등록 순서가 바뀔 경우 대참사가 일어난다.
+        if (sessionUserDto == null) {
+            throw new UnAuthorizedException("로그인 먼저 진행해주세요.(관리자 전용)");
         }
 
-        // 3. 관리자(ADMIN) 권한 체크
-        if(!sessionUserDto.isAdmin()) {
-            throw new Exception401("권한이 없습니다.(관리자 전용)");
+        // 2. 관리자가 아니면 접근 거부
+        if (!sessionUserDto.isAdmin()) {
+            throw new Exception403("관리자만 접근할 수 있는 페이지입니다.");
         }
+
         return true;
     }
 

@@ -50,6 +50,7 @@ public class GlobalExceptionHandler {
 
     // 특정 예외 타입이 발생했을 때 실행될 메서드로 지정
     @ExceptionHandler(UnAuthorizedException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED) // HTTP 401 상태 코드 지정(alert 창 띄움)
     @ResponseBody // 화면을 뽑지 않고 데이터로 반환
     public String exUnauthorized(UnAuthorizedException e, HttpServletRequest request) {
         log.warn("=== 401(Data 반환) Unauthorized 에러 발생 ===");

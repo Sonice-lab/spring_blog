@@ -49,14 +49,17 @@ public class WebMvcConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
 
         //
+
+
+        // 1. 화면에 사용자 정보 자동 주입 인터셉터
         registry.addInterceptor(sessionUserModelInterceptor)
                 .addPathPatterns("/**"); //모든 경로
 
-        // 1. 차단한 IP 접근 경우 접속을 막기 위한 인터셉터
+        // 2. 차단한 IP 접근 경우 접속을 막기 위한 인터셉터
         registry.addInterceptor(ipBlockInterceptor)
                 .addPathPatterns("/**");
 
-        // 2. 로그인이 되지 않고는 접근할 수 없는 경우 로그인 요청 관련 인터셉터
+        // 3. 로그인이 되지 않고는 접근할 수 없는 경우 로그인 요청 관련 인터셉터
         registry.addInterceptor(loginInterceptor)
                 // 인터셉터가 동작할 URL 패턴을 지정
                 .addPathPatterns("/user/**", "/board/**", "/reply/**", "/admin/**")
@@ -66,7 +69,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
         // 예시) /board/1, /board/123 (상세보기)는 로그인 없어도 접근 가능
         // /board/1/update  처럼 뒤에 경로가 더 붙는 경우 제외대상이 아니게 된다.
 
-        // 3. [인가] 일반 USER 계정의 관리자 페이지 접근 차단 인터셉터(새로 추가!)
+        // 4. 관리자 검사: 로그인 검사 다음에 등록(등록한 순서대로 실행됨)
+        // 괄호 안에 IoC가 이루어지지 않는다.
         registry.addInterceptor(adminInterceptor)
                 .addPathPatterns("/admin/**");
     }
