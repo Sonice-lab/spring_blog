@@ -96,7 +96,7 @@ public class UserService {
                 });
 
         // 2. 비밀번호 비교: matches(입력한 평문, DB에 저장된 해시)
-        if(!passwordEncoder.matches(loginDto.getPassword(), user.getPassword())) {
+        if (!passwordEncoder.matches(loginDto.getPassword(), user.getPassword())) {
             log.warn("로그인 실패");
             throw new Exception400("사용자명 또는 비밀번호가 올바르지 않습니다."); // 유추할 수 없도록 설계(보안상의 로직)
         }
@@ -215,4 +215,48 @@ public class UserService {
 
         return userJpaRepository.save(newUser);
     }
+
+    // 네이버 로그인: 처음이면 자동 회원가입, 이미 있으면 로그인
+    @Transactional
+    public SessionUserDto naverLogin(UserResponse.NaverUserInfo naverUserInfo) {
+        // 네이버는 실제 사용자 정보가 response 객체 안에 있으므로 꺼내서 사용한다.
+        UserResponse.NaverUserInfo.Response profile = naverUserInfo.getResponse();
+
+        // 1. 네이버 회원 고유식별자(id)로 우리 서비스에 사용자명을 자동으로 만들어준다.
+        String username = "naver_" + profile.getId();
+
+        // 2. 이미 가입했는지 확인, 없으면 자동 회원가입
+        User user = userJpaRepository.findByUsername(username)
+                .orElseGet(() -> joinNaverUser(username, naverUserInfo));
+
+        // 3. 혹시라도 같은 이름(동명이인)의 일반 회원이 있다면 네이버 사용자로 로그인 시키지 않음
+        if (user.getProvider() != OAuthProvider.NAVER) {
+            throw new Exception400("이미 사용중인 사용자명입니다.");
+        }
+
+        // 트랜잭션 안에서 SessionUserDto 생성
+        return new SessionUserDto(user);
+    }
+
+    private User joinNaverUser(String username, UserResponse.NaverUserInfo naverUserInfo) {
+        // 네이버는 실제 데이터가 response 안에 있으므로 꺼내줍니다.
+        UserResponse.NaverUserInfo.Response profile = naverUserInfo.getResponse();
+
+        User newUser = User.builder()
+                .username(username)
+                // 네이버 로그인인가? 일반 로그인인가?
+                // 네이버 사용자는 비밀번호로 로그인하지 않으므로 아무도 알 수 없는 값을 입력
+                .password(passwordEncoder.encode(UUID.randomUUID().toString()))
+                .profileImage(profile.getProfileImage())
+                .provider(OAuthProvider.NAVER)
+                // 네이버는 보통 이메일을 필수호 받아오므로 profile.getEmail()을 사용하거나,
+                // 카카오 컨벤션과 완전히 똑같이 맞추려면 "username + @naver.com" 으로 표기
+                .email(profile.getEmail() != null ? profile.getEmail() : username + "@naver.com")
+                .build();
+
+        newUser.addRole(Role.USER);
+        return userJpaRepository.save(newUser);
+    }
+
+
 }

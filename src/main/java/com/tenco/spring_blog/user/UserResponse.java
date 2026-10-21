@@ -82,6 +82,13 @@ public class UserResponse {
         @JsonProperty("refresh_token_expires_in")
         private Long refreshTokenExpiresIn;
 
+        // 네이버를 위한 추가 속성 2가지
+        @JsonProperty("error")
+        private String error;
+
+        @JsonProperty("error_description")
+        private String errorDescription;
+
     }
 
     // 카카오 소셜 로그인 사용자 정보 DTO
@@ -110,6 +117,33 @@ public class UserResponse {
 
             @JsonProperty("thumbnail_image")
             private String thumbnailImage;
+        }
+    }
+
+    // 네이버 소셜 로그인 사용자 정보 DTO
+    @Getter
+    @Setter
+    public static class NaverUserInfo {
+
+        private String resultcode;
+        private String message;
+        private Response response;
+
+        @Getter
+        @Setter
+        public static class Response {
+
+            private String id;
+
+            private String nickname;
+
+            private String name;
+
+            private String email;
+
+            @JsonProperty("profile_image")
+            private String profileImage;
+
         }
     }
 

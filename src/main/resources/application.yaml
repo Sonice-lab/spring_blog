@@ -23,3 +23,10 @@ oauth:
     client_secret: ${KAKAO_CLIENT_SECRET}
     redirect-uri: ${REDIRECT_URI}
     access-token: ${ACCESS_TOKEN}
+
+  naver:
+    client_id: ${NAVER_CLIENT_ID}
+    client_secret: ${NAVER_CLIENT_SECRET}
+    redirect-uri: ${NAVER_REDIRECT_URI}
+    access-token: ${NAVER_ACCESS_TOKEN}
+

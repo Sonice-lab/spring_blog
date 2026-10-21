@@ -26,6 +26,35 @@ public class UserController {
 
     private final UserService userService;
     private final KakaoLoginService kakaoLoginService;
+    private final NaverLoginService naverLoginService;
+
+    // 1. 네이버 로그인 페이지로 이동(인증 URL 생성 및 state 세션 저장)
+    // todo - 다시 돌아오기
+    @GetMapping("/naver-login")
+    public String naverLogin(HttpSession session) {
+        log.info("1. [요청 시작] 네이버 로그인 진입 세션 ID: {}", session.getId());
+        // NaverLoginService에서 state 생성 및 세션 저장을 포함한 인증 URL을 받아옴
+        String authorizeUrl = naverLoginService.getAuthorizeUrl(session);
+        return "redirect:" + authorizeUrl;
+    }
+
+    // 2. 네이버 로그인 롤백(인가 코드 및 state 검증 후 로그인/회원가입 처리)
+    @GetMapping("/oauth/naver")
+    public String naverCallback(@RequestParam(name = "code", required = false) String code,
+                                @RequestParam(name = "state", required = false) String state,
+                                HttpSession session) {
+        log.info("2. [콜백 응답] 네이버 콜백 진입 세션 ID: {}", session.getId());
+        // NaverLoginService에 code 와 state(세션 비교 검증용) 전달
+        SessionUserDto sessionUserDto = naverLoginService.login(code, state, session);
+
+        // 세션에 회원 정보 저장
+        session.setAttribute(Define.SESSION_USER, sessionUserDto);
+
+        return "redirect:/";
+    }
+
+
+
 
 
 
@@ -95,7 +124,7 @@ public class UserController {
     // 주소 설계
     // GET http://localhost:8080/login
     @GetMapping("/login")
-    public String loginForm() {
+    public String loginForm(HttpSession session) {
         return "user/login-form";
     }
 
