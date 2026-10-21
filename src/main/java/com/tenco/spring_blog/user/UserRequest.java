@@ -2,6 +2,7 @@ package com.tenco.spring_blog.user;
 
 import com.tenco.spring_blog._core.error.Exception400;
 import lombok.Data;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.multipart.MultipartFile;
 
 public class UserRequest {
@@ -72,11 +73,11 @@ public class UserRequest {
         // JoinDto에서 메서드를 호출하면 User 객체를 반환하는 코드를 작성하기
 
         //toEntity -> 전부 설계한 후 Controller 설계하기
-        public User toEntity(String profileImageFilename) {
+        public User toEntity(String profileImageFilename, String encodePassword) {
             // 만약 JoinDto의 정보가 전부 들어왔다면 User 객체로 반환해야한다.
             return User.builder()
                     .username(username)
-                    .password(password)
+                    .password(encodePassword)
                     .email(email)
                     .profileImage(profileImageFilename)
                     .build();
@@ -97,6 +98,7 @@ public class UserRequest {
             if (password == null || password.trim().isEmpty()) {
                 throw new Exception400("패스워드는 필수입니다.");
             }
+
         }
     }
 

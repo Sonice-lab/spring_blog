@@ -6,7 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface BoardJpaRepository extends JpaRepository<Board, Long> {
@@ -45,7 +44,7 @@ public interface BoardJpaRepository extends JpaRepository<Board, Long> {
 //    List<Board> findAllJoinUser();
 
     // 게시글 페이징 조회(작성자와 함께 조인해서 조회) -> join fetch는 N+1 문제가 발생하지 않는다.
-    // 오버로딩 가능 todo - 추후 이름 위의 메서드와 같이 변경
+    // 오버로딩 가능
     // 정렬은 Pageable 에 담아서 전달하므로 쿼리에 order by를 쓰지 않는다.
     // 페이징 처리 후 버전 - 게시글 조회 + 사용자에 대한 정보 가져오기 + 페이징 처리 주문서
     // 데이터 타입 또한 바뀐다. -> Page

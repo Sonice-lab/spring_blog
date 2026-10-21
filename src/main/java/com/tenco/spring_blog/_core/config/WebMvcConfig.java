@@ -6,7 +6,10 @@ import com.tenco.spring_blog._core.interceptor.LoginInterceptor;
 import com.tenco.spring_blog._core.interceptor.SessionUserModelInterceptor;
 import com.tenco.spring_blog._core.util.FileUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -74,4 +77,13 @@ public class WebMvcConfig implements WebMvcConfigurer {
         registry.addInterceptor(adminInterceptor)
                 .addPathPatterns("/admin/**");
     }
+
+    // 비밀번호 해싱 도수를 빈으로 등록(필요한 곳에서 di 할 수 있다.)
+    // 미리 만들어져 있는 부분을 가져와서 사용하자.
+    @Bean // IoC 처리됨
+    // 업캐스팅 되어지고 있다.
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
 }

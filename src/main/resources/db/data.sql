@@ -1,9 +1,9 @@
 -- 1. 사용자 (외래키가 가리킬 대상이므로 먼저 넣습니다)
--- 비밀번호는 지금은 연습용 평문입니다. 암호화는 나중에 적용합니다
-INSERT INTO user_tb (username, password, email, created_at) VALUES ('admin',   '1234', 'admin@tenco.com',   NOW());
-INSERT INTO user_tb (username, password, email, created_at) VALUES ('minsu',   '1234', 'minsu@tenco.com',   NOW());
-INSERT INTO user_tb (username, password, email, created_at) VALUES ('jihun',   '1234', 'jihun@tenco.com',   NOW());
-INSERT INTO user_tb (username, password, email, created_at) VALUES ('seoyeon', '1234', 'seoyeon@tenco.com', NOW());
+-- 비밀번호는 모두 "1234" 를 BCrypt 로 해싱한 값입니다
+INSERT INTO user_tb (username, password, email, created_at) VALUES ('admin',   '$2a$10$jiByiZruBRyjQuhMgF6kY.Hg2NTqKV2YqmbiGoUYn/HthKtJrkoca', 'admin@tenco.com',   NOW());
+INSERT INTO user_tb (username, password, email, created_at) VALUES ('minsu',   '$2a$10$jiByiZruBRyjQuhMgF6kY.Hg2NTqKV2YqmbiGoUYn/HthKtJrkoca', 'minsu@tenco.com',   NOW());
+INSERT INTO user_tb (username, password, email, created_at) VALUES ('jihun',   '$2a$10$jiByiZruBRyjQuhMgF6kY.Hg2NTqKV2YqmbiGoUYn/HthKtJrkoca', 'jihun@tenco.com',   NOW());
+INSERT INTO user_tb (username, password, email, created_at) VALUES ('seoyeon', '$2a$10$jiByiZruBRyjQuhMgF6kY.Hg2NTqKV2YqmbiGoUYn/HthKtJrkoca', 'seoyeon@tenco.com', NOW());
 
 -- 1-1. 사용자 역할 (admin 은 관리자이면서 일반 사용자)
 INSERT INTO user_role_tb (user_id, role) VALUES (1, 'ADMIN');
