@@ -28,7 +28,6 @@ public class UserController {
     private final KakaoLoginService kakaoLoginService;
 
 
-
     @GetMapping("/kakao-login")
     public String kakaoLogin() {
         return "redirect:" + kakaoLoginService.getAuthorizeUrl();
@@ -83,12 +82,19 @@ public class UserController {
     // POST http://localhost:8080/join
     @PostMapping("/join")
     //파싱 전략
-    public String join(UserRequest.JoinDto joinDto, Model model) {
+    public String join(UserRequest.JoinDto joinDto, Model model, HttpSession session) {
 
         // 기능 코드 추가
         // 인증 검사(이전에 로그인을 했는가?) -> 필요 없음 / 유효성 검사 -> 필요 -> 실시
         joinDto.Validate();
-        userService.join(joinDto);
+        // 이메일 인증 완료된 값 꺼내오기(세션에 있음)
+        String verifiedEmail = (String) session.getAttribute(Define.VERIFIED_EMAIL);
+
+        userService.join(joinDto, verifiedEmail);
+
+        // 가입 완료 후 임시 저장해 둔 세션이 이메일 정보 제거
+        session.removeAttribute(Define.VERIFIED_EMAIL);
+
         return "redirect:/login";
     }
 

@@ -7,6 +7,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 public class UserRequest {
 
+
+
     // 이메일 인증 요청 DTO (발송, 확인 API에서 함께 사용)
     @Data
     public static class EmailCheckDto {

@@ -32,6 +32,7 @@ public class UserService {
 
     private final UserJpaRepository userJpaRepository;  //DI 주입 완료
     private final PasswordEncoder passwordEncoder;
+    private final MailService mailService;
 
     /**
      * 회원가입 처리
@@ -41,8 +42,15 @@ public class UserService {
      */
     // 회원가입 기능
     @Transactional // 쓰기 작업이므로 트랜잭션 활성화
-    public UserResponse.JoinDto join(UserRequest.JoinDto joinDto) {
+    public UserResponse.JoinDto join(UserRequest.JoinDto joinDto, String verifiedEmail) {
         log.info("회원 가입 서비스 처리 시작 - 사용자명: {}", joinDto.getUsername());
+
+        // 0. 이메일 인증 여부 확인 (추가)
+        // 인증하지 않았거나 인증한 이메일과 가입 폼의 이메일이 다르면 거부
+        if (verifiedEmail == null || !verifiedEmail.equals(joinDto.getEmail())) {
+            throw new Exception400("이메일 인증을 먼저 완료해주세요.");
+        }
+
 
         // 비즈니스 조직
         // 1. 중복체크하기 - 이미 있으면 null이 아님(ifPresent 차이점 확인)
@@ -53,11 +61,7 @@ public class UserService {
                 });
 
         // 2. 이메일 중복 검사
-        userJpaRepository.findByEmail(joinDto.getEmail())
-                .ifPresent(user -> {
-                    log.warn("회원가입 실패 - 중복된 이메일: {}", joinDto.getEmail());
-                    throw new Exception400("이미 사용중인 이메일입니다.");
-                });
+        checkEmailAvailable(joinDto.getEmail());
 
         String profileImage = FileUtil.saveImage(joinDto.getProfileImage());
 
@@ -96,7 +100,7 @@ public class UserService {
                 });
 
         // 2. 비밀번호 비교: matches(입력한 평문, DB에 저장된 해시)
-        if(!passwordEncoder.matches(loginDto.getPassword(), user.getPassword())) {
+        if (!passwordEncoder.matches(loginDto.getPassword(), user.getPassword())) {
             log.warn("로그인 실패");
             throw new Exception400("사용자명 또는 비밀번호가 올바르지 않습니다."); // 유추할 수 없도록 설계(보안상의 로직)
         }
@@ -223,4 +227,6 @@ public class UserService {
                     throw new Exception400("이미 가입되어있는 이메일입니다.");
                 });
     }
+
+
 }

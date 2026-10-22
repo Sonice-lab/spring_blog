@@ -8,7 +8,6 @@ import jakarta.mail.internet.MimeMessage;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -61,4 +60,6 @@ public class MailService {
         session.setAttribute(Define.VERIFIED_EMAIL, email); // 인증이 끝나면 이메일을 다시 체크해야하기에
         return true;
     }
+
+
 }

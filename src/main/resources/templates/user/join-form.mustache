@@ -5,7 +5,8 @@
         <div class="card-header"><b>회원가입</b></div>
         <div class="card-body">
             <!-- 파일을 보내려면 enctype을 반드시 Multipart/form-data 이어야 함 -->
-            <form action="/join" method="post" enctype="multipart/form-data">
+            <!-- 태그 자체에 onsubmit: 제출 직전에 인증 여부를 한 번 처리하디 위해 설정 -->
+            <form action="/join" method="post" enctype="multipart/form-data" onsubmit="return checkVerify()">
                 <div class="mb-3">
                     <input type="text" class="form-control" placeholder="사용자명" name="username">
                 </div>
@@ -118,6 +119,17 @@
             alert("서버와 통신하지 못했습니다.");
         }
     }
+
+    // 3. 회원 가입 제출 직전 확인 (false를 반환하면 제출이 취소됨)
+    function checkVerify() {
+
+        if(!isEmailVerified) {
+            alert("이메일 인증을 먼저 진행해주시기 바랍니다.");
+            return false;
+        }
+        return true;
+    }
+
 
 </script>
 
