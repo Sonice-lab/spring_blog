@@ -7,6 +7,30 @@ import org.springframework.web.multipart.MultipartFile;
 
 public class UserRequest {
 
+    // 이메일 인증 요청 DTO (발송, 확인 API에서 함께 사용)
+    @Data
+    public static class EmailCheckDto {
+        private String email; // 사용자가 작성한 이메일(1번째 요청 시 사용)
+        private String code; // 난수 인증번호 6자리 코드를 받기 위한 변수(2번째 요청 시 사용)
+
+        public void validate() {
+            if (email == null || email.trim().isEmpty()) {
+                throw new Exception400("이메일을 입력해주세요.");
+            }
+            if (!email.contains("@")) {
+                throw new Exception400("올바른 이메일 형식이 아닙니다.");
+            }
+        }
+
+        // 인증 번호 확인 API에서 추가로 호출할 예정
+        public void validateCode() {
+            validate(); //이메일 먼저 확인
+            if (code == null || code.trim().isEmpty()) {
+                throw new Exception400("인증번호를 입력해주세요.");
+            }
+        }
+    }
+
     // 회원정보 수정용 DTO 설계
     @Data
     public static class UpdateDto {
@@ -30,7 +54,7 @@ public class UserRequest {
                 throw new Exception400("변경할 비밀번호나 프로필 사진을 입력해주세요.");
             }
 
-            if ( hasPassword() && password.length() < 4) {
+            if (hasPassword() && password.length() < 4) {
                 throw new Exception400("비밀번호는 네글자이상이어야 합니다.");
             }
             //필요하다면 길이 수 제한, 특수문자 포함 여부 설정 (정규표현식) 활용 가능

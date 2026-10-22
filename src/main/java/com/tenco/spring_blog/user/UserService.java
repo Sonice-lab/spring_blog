@@ -215,4 +215,12 @@ public class UserService {
 
         return userJpaRepository.save(newUser);
     }
+
+    // 이메일 중복 체크 -> 이메일 사용 가능 여부 확인
+    public void checkEmailAvailable(String email) {
+        userJpaRepository.findByEmail(email)
+                .ifPresent(user -> {
+                    throw new Exception400("이미 가입되어있는 이메일입니다.");
+                });
+    }
 }

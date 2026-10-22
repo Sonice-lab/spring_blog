@@ -19,6 +19,8 @@ repositories {
 }
 
 dependencies {
+    // 메일 발송 (JavaMailSender)
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
     // 비밀번호 해싱 (BCryptPasswordEncoder)
     implementation 'org.springframework.security:spring-security-crypto'
     // Source: https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
