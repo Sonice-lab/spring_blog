@@ -28,12 +28,17 @@ public class UserController {
     private final KakaoLoginService kakaoLoginService;
 
 
+    // 휴대폰 인증 화면 폼 요청 처리
+    @GetMapping("/user/sms-verify")
+    public String smsVerifyForm() {
+        return "user/sms-verify";
+    }
+
+
     @GetMapping("/kakao-login")
     public String kakaoLogin() {
         return "redirect:" + kakaoLoginService.getAuthorizeUrl();
     }
-
-    //
 
     // 흐름
     // 1. 인가 코드 받기 --> 엑세스 토큰 요청(보안상의 이유) -> 사용자 정보 요청 -> 가입 또는 로그인 처리

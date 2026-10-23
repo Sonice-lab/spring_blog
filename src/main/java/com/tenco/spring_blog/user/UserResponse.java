@@ -16,6 +16,7 @@ public class UserResponse {
         private String email;
         private String profileImage; // 파일이름(없으면 null)
         private String createdAt; // 포맷된 가입일
+        private String phoneNumber;
 
         public DetailDto(User user) {
             this.id = user.getId();
@@ -23,6 +24,7 @@ public class UserResponse {
             this.email = user.getEmail();
             this.profileImage = user.getProfilePath();
             this.createdAt = MyDateUtil.timestampFormat(user.getCreatedAt());
+            this.phoneNumber = user.getPhoneNumber();
         }
     }
 

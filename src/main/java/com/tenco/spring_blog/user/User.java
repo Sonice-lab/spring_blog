@@ -15,7 +15,6 @@ import java.util.List;
 @Table(name = "user_tb")
 @Entity //자동 테이블 생성
 @Data
-
 public class User {
 
     //pk 만들기
@@ -53,6 +52,11 @@ public class User {
     @Column(nullable = false)
     @ColumnDefault("'LOCAL'") // 문자열이므로 안에 작은 따옴표 필수!
     private OAuthProvider provider;
+
+    // 휴대폰을 저장할 컬럼 추가
+    @Column(length = 20, unique = true)
+    private String phoneNumber;
+
 
 
     // 편의성을 위한 생성자 만들기

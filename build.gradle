@@ -19,6 +19,9 @@ repositories {
 }
 
 dependencies {
+    // 문자 발송 (SOLAPI SDK)
+    // Source: https://mvnrepository.com/artifact/com.solapi/sdk
+    implementation group: 'com.solapi', name: 'sdk', version: '1.0.3'
     // 메일 발송 (JavaMailSender)
     implementation 'org.springframework.boot:spring-boot-starter-mail'
     // 비밀번호 해싱 (BCryptPasswordEncoder)
@@ -44,4 +47,9 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+// Java 소스 코드를 빌드할 때 무조건 UTF-8을 사용하도록 강제
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
 }

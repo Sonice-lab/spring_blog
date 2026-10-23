@@ -1,0 +1,85 @@
+{{> layout/header}}
+
+<div class="container p-5">
+    <div class="card">
+        <div class="card-header"><b>휴대폰 인증</b></div>
+        <div class="card-body">
+            <form>
+                <div class="mb-3">
+                    <label for="phoneNumber" class="form-label">휴대폰 번호</label>
+                    <div class="d-flex">
+                        <!-- 로그인한 유저의 기존 번호가 있다면 미리 세팅 -->
+                        <input type="text" class="form-control" id="phoneNumber" placeholder="010-1234-5678"
+                               value="{{#user.phoneNumber}}{{user.phoneNumber}}{{/user.phoneNumber}}">
+                        <button type="button" class="btn btn-outline-secondary ms-2" id="btn-send">인증번호 전송</button>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="code" class="form-label">인증번호</label>
+                    <div class="d-flex">
+                        <input type="text" class="form-control" id="code" placeholder="인증번호 6자리">
+                        <button type="button" class="btn btn-outline-secondary ms-2" id="btn-verify">확인</button>
+                    </div>
+                </div>
+                <div class="mt-4 text-center">
+                    <a href="/user/detail" class="btn btn-secondary w-100">마이페이지로 돌아가기</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 1. 인증번호 전송 버튼 이벤트
+    document.querySelector('#btn-send').addEventListener('click', function () {
+        const phoneNumber = document.querySelector('#phoneNumber').value;
+
+        fetch('/api/sms/send', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({phoneNumber: phoneNumber})
+        })
+                .then(response => response.json().then(data => ({status: response.status, body: data})))
+                .then(res => {
+                    if (res.status === 200) {
+                        alert(res.body.message); // 발송 성공 메시지
+                    } else {
+                        alert(res.body.message); // 에러 메시지
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+    });
+
+    // 2. 인증번호 확인 버튼 이벤트
+    document.querySelector('#btn-verify').addEventListener('click', function () {
+        const phoneNumber = document.querySelector('#phoneNumber').value;
+        const code = document.querySelector('#code').value;
+
+        fetch('/api/sms/verify', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                phoneNumber: phoneNumber,
+                code: code
+            })
+        })
+                .then(response => response.json().then(data => ({status: response.status, body: data})))
+                .then(res => {
+                    if (res.status === 200) {
+                        alert(res.body.message); // 인증 완료 메시지
+                        // 인증 성공 시 회원정보 수정(마이페이지) 화면으로 이동
+                        window.location.href = '/user/detail';
+                    } else {
+                        alert(res.body.message); // 불일치 메시지
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+    });
+</script>
+
+{{> layout/footer}}

@@ -40,3 +40,9 @@ oauth:
     client_secret: ${KAKAO_CLIENT_SECRET}
     redirect-uri: ${REDIRECT_URI}
     access-token: ${ACCESS_TOKEN}
+
+# SOLAPI 문자 발송 설정 (값은 .env 에서 가져옴)
+solapi:
+  api-key: ${SOLAPI_API_KEY}
+  api-secret: ${SOLAPI_API_SECRET}
+  sender: ${SOLAPI_SENDER}

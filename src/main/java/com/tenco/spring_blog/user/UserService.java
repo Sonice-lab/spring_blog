@@ -228,5 +228,17 @@ public class UserService {
                 });
     }
 
+    // 인증이 완료되었을 때 DB에 있는 해당 회원의 phoneNumber 값을 변경
+    // 해당 회원의 공식 프로필 정보로 데이터베이스에 영구 기록하기 위함
+    @Transactional
+    public void updatePhoneNumber(Long userId, String phoneNumber) {
+        // 1. DB에서 기존 사용자 조회
+        User user = userJpaRepository.findById(userId)
+                .orElseThrow(() -> new Exception400("사용자를 찾을 수 없습니다."));
+
+        // 2. 휴대폰 번호에서 업데이트(더티 체킹으로 자동 UPDATE 쿼리 발생)
+        user.setPhoneNumber(phoneNumber);
+    }
+
 
 }

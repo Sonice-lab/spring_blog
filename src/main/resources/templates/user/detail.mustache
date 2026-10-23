@@ -29,16 +29,33 @@
                 <p class="form-control-plaintext">{{user.email}}</p>
             </div>
 
+            <!-- 👇 새로 추가된 휴대폰 인증 상태 영역 -->
+            <div class="mb-3">
+                <label for="" class="form-label fw-bold">휴대폰 인증 상태</label>
+                <div>
+                    {{#user.phoneNumber}}
+                        <span class="badge bg-success text-white p-2">✅ 인증 완료 ({{user.phoneNumber}})</span>
+                    {{/user.phoneNumber}}
+
+                    {{^user.phoneNumber}}
+                        <span class="badge bg-secondary text-white p-2 mb-2">미인증</span>
+                        <br>
+                        <a href="/user/sms-verify" class="btn btn-sm btn-outline-dark mt-1">휴대폰 인증하기</a>
+                    {{/user.phoneNumber}}
+                </div>
+            </div>
+            <!-- 👆 새로 추가된 영역 끝 -->
+
             <div class="mb-3">
                 <label for="" class="form-label fw-bold">가입일</label>
                 <p class="form-control-plaintext">{{user.createdAt}}</p>
             </div>
 
-            <div class="mb-3">
+            <div class="mb-3 mt-4">
                 <a href="/user/update" class="btn btn-primary">회원 정보 수정</a>
+                <!-- 하단에 중복되던 휴대폰 인증 버튼은 위쪽 영역으로 이동하여 제거했습니다 -->
                 <a href="/" class="btn btn-secondary">목록으로</a>
             </div>
-
 
         </div>
     </div>
