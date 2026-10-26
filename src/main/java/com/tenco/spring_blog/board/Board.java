@@ -10,6 +10,7 @@ import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Data
 //엔티티 클래스 만들기: 데이터 베이스 테이블 한 개를 자바 클래스로 그린 설계도
@@ -35,6 +36,15 @@ public class Board {
     @ColumnDefault("false") // 기본은 무료게시글로 셋팅
     private boolean premium;
 
+    // todo - 논리 삭제 플래그
+    private boolean isDeleted = false;
+    private LocalDateTime deletedAt;
+
+    // todo - 게시글 논리 삭제 비즈니스 메서드
+    public void softDelete() {
+        this.isDeleted = true;
+        this.deletedAt = LocalDateTime.now();
+    }
 
     //N:1
     // 데이터를 가지고 오는 전략

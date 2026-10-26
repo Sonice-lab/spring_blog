@@ -140,10 +140,6 @@ public class BoardResponse {
             if(!canRead) {
                 this.content = null;
             }
-
-
-
-
         }
     }
 

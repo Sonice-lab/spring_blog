@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface BoardJpaRepository extends JpaRepository<Board, Long> {
@@ -68,6 +69,11 @@ public interface BoardJpaRepository extends JpaRepository<Board, Long> {
                     or b.content like concat('%', :keyword, '%')
                     """)
     Page<Board> findAllKeywordJoinUser(Pageable pageable, @Param("keyword") String keyword);
+
+    // todo - 일반 블로그 목록 조회 - 삭제되지 않은 게시글만 조회
+
+
+    // todo - 일반 단건 조회 - 삭제되지 않은 게시글만 조회
 
 
 }
