@@ -11,6 +11,7 @@ public class BoardRequest {
     public static class SaveDto {
         private String title;
         private String content;
+        private boolean premium; // 유료 게시글 여부 -> 테체크하지 않을 경우 false (Wrapper class x)
 
         // 검증 메서드 (선택 사항)
         public void validate() {
@@ -28,6 +29,7 @@ public class BoardRequest {
             return Board.builder()
                     .title(this.title)
                     .content(this.content)
+                    .premium(this.premium)  // 프리미엄 여부를 어떻게 주입받으면 될까? -
                     .user(user)
                     // 매개변수로 가지고 오기
                     // 세션에서 가져온 User 객체 설정
@@ -39,6 +41,7 @@ public class BoardRequest {
     public static class UpdateDto {
         private String title;
         private String content;
+        private boolean premium;
 
         // 검증 메서드 (선택 사항)
         public void validate() {

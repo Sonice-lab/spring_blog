@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
@@ -19,6 +20,10 @@ import java.sql.Timestamp;
 @Builder
 
 public class Board {
+
+    // 상수 선언 - 유료 게시글 가격
+    public static final int PRIMIUN_PRICE = 500;
+
     @Id // 이 필드가 기본키 임을 나타냄
     //기본키값을 자동으로 생성(IDENTITY -> DB의 기본 설정을 따른다.) AUTO_INCREMENT 기능 사용
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,7 +31,10 @@ public class Board {
     // 별도 어노테이션이 없으면 자바의 필드명이 컬럼명이 된다.
     private String title;
     private String content;
-    // private String username;
+    @Column(nullable = false)
+    @ColumnDefault("false") // 기본은 무료게시글로 셋팅
+    private boolean premium;
+
 
     //N:1
     // 데이터를 가지고 오는 전략
@@ -42,10 +50,11 @@ public class Board {
     // 생성자 설계 (비즈니스 로직)
     // id값과 createdAt은 굳이 만들지 않는다. -> JPA에서 자동으로 설정해주므로 매개변수에서 제외
     @Builder
-    public Board(String title, String content, User user) {
+    public Board(String title, String content, User user, boolean premium) {
         this.title = title;
         this.content = content;
         this.user = user;
+        this.premium = premium;
     }
 
     // 자신의 상태값을 변경하는 메서드 추가 - 객체 지향 설계
@@ -56,6 +65,7 @@ public class Board {
         // 영속 상태에 있는 엔티티의 필드값을 여기서 변경함
         this.title = updateDto.getTitle();
         this.content = updateDto.getContent();
+        this.premium = updateDto.isPremium();
         // 변경 방지 (Dirty Checking) 동작 과정
         // 1. 영속성 콘텍스트가 엔티티 최초 상태를 스냅샷으로 따로 보관
         // 2. 필드값 변경 시 현재 시점 상태와 스냅샷 비교

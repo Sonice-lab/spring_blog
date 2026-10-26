@@ -11,6 +11,13 @@
                 <div class="mb-3">
                     <textarea class="form-control" rows="5" name="content">{{board.content}}</textarea>
                 </div>
+                {{!todo - 추후 유료 무료 여부 처리}}
+                {{!체크하면 premium=true, 체크박스는 체크하지 않으면 아무 값도 보내지 않음}}
+                <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" id="premium"
+                           name="premium" value="true" {{#board.premium}} checked {{/board.premium}}>
+                    <label for="premium" class="form-check-label">유료 게시글로 등록(다른 사용자는 500 포인트로 구매 후 열람 가능)</label>
+                </div>
                 <button class="btn btn-primary form-control">수정 완료</button>
             </form>
         </div>

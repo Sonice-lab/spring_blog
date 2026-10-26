@@ -228,5 +228,13 @@ public class UserService {
                 });
     }
 
+    @Transactional
+    public int chargePoint(Long userId, Integer amount) {
+        User user = findById(userId);
+        user.chargePoint(amount);
+        log.info("포인트 충전 완료 - 사용자 IDL {}, 충전: {}, 보유 포인트: {}", userId, amount, user.getPoint());
+        return user.getPoint();
+    }
+
 
 }

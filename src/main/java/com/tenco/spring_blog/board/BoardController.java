@@ -2,6 +2,7 @@ package com.tenco.spring_blog.board;
 
 import com.tenco.spring_blog._core.error.Exception403;
 import com.tenco.spring_blog._core.util.Define;
+import com.tenco.spring_blog.purchase.PurchaseService;
 import com.tenco.spring_blog.reply.ReplyResponse;
 import com.tenco.spring_blog.reply.ReplyService;
 import com.tenco.spring_blog.user.SessionUserDto;
@@ -25,6 +26,17 @@ public class BoardController {
     //DI 처리
     private final BoardService boardService;
     private final ReplyService replyService;
+    private final PurchaseService purchaseService;
+
+    // 유료 게시글 구매 요청 URL 만들기
+    // /board/{{board.id}}/purchase
+    @PostMapping("/board/{id}/purchase")
+    public String purchase(@PathVariable(name = "id") Long id, HttpSession session) {
+        SessionUserDto sessionUserDto = (SessionUserDto) session.getAttribute(Define.SESSION_USER);
+        purchaseService.purchase(id, sessionUserDto.getId());
+        // 구매 완료했다면 구매 후 상세보기로 이동(본문이 나와야 함)
+        return "redirect:/board/" + id;
+    }
 
     // private final HttpSession session; -> 프로그램 구현시 무거워져서 권장하지 않음 -> 의존 관계로 활용하기
     // http://localhost:8080/?page=1
@@ -41,7 +53,7 @@ public class BoardController {
 
         // 한글이나 특수문자 깨짐 방지
         // 페이지 링크는 직접 URL 인코딩이 필요하다.
-        model.addAttribute("keywordParam",URLEncoder.encode(keyword, StandardCharsets.UTF_8));
+        model.addAttribute("keywordParam", URLEncoder.encode(keyword, StandardCharsets.UTF_8));
 
         return "board/list";
     }
@@ -51,11 +63,14 @@ public class BoardController {
     @GetMapping({"/board/{id}"})
     public String detail(@PathVariable(name = "id") Long id, Model model, HttpSession session) {
 
-        BoardResponse.DetailDto detailDto = boardService.findById(id);
+
         // 데이터베이스 조회가 필요한가?
         SessionUserDto sessionUserDto = (SessionUserDto) session.getAttribute(Define.SESSION_USER);
+
         // 로그인하지 않았으면 null 설정
         Long sessionUserId = (sessionUserDto == null) ? null : sessionUserDto.getId();
+        BoardResponse.DetailDto detailDto = boardService.findById(id, sessionUserId);
+
 
         // 로그인 완료했고, 작성자 본인일 때만 수정/삭제 버튼 표시
         boolean isOwner = sessionUserDto != null && detailDto.getUserId().equals(sessionUserDto.getId());

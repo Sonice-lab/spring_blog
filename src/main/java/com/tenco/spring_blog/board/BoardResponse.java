@@ -111,8 +111,13 @@ public class BoardResponse {
         private Long userId;
         private String username;
         private String createdAt;
+        private boolean premium; //유료 게시글 여부
+        private int price; // 가격 안내 문구용
+        private boolean owner; // 로그인한 사용자가 작성자인가?
+        private boolean purchased; // 로그인한 이용자가 구매를 했는가?
+        private boolean canRead; //본문 열람 가능 여부 -> 1. 무료글일 경우 - 모두 열람 가능 2. 유료게시글일 경우 - 작성자, 구매자 -> 열람 가능
 
-        public DetailDto(Board board) {
+        public DetailDto(Board board, boolean owner, boolean purchased) {
             this.id = board.getId();
             this.title = board.getTitle();
             this.content = board.getContent();
@@ -124,6 +129,21 @@ public class BoardResponse {
             if (board.getCreatedAt() != null) {
                 this.createdAt = MyDateUtil.timestampFormat(board.getCreatedAt());
             }
+            this.premium = board.isPremium();
+            this.price = 500;  // todo - 추후 수정
+            this.owner = owner;
+            this.purchased = purchased;
+            this.canRead = !premium || owner || purchased;
+            //중요) 그렇지만 content는 어차피 화면에 나타나는 것이기 때문에 어떠한 조작으로도 게시글을 읽을 수 있는 문제가 발생한다.
+            // todo - 이를 해결하지 위해서는?
+
+            if(!canRead) {
+                this.content = null;
+            }
+
+
+
+
         }
     }
 
@@ -132,11 +152,13 @@ public class BoardResponse {
         private Long id;
         private String title;
         private String content;
+        private boolean premium;
 
         public UpdateFormDto(Board board) {
             this.id = board.getId();
             this.title = board.getTitle();
             this.content = board.getContent();
+            this.premium = board.isPremium();
         }
     }
 }

@@ -34,6 +34,21 @@
                 <p class="form-control-plaintext">{{user.createdAt}}</p>
             </div>
 
+            {{!보유 포인트 + 충전(임시 추후 삭제) 결베와 연동}}
+            <div class="mb-3">
+                <label for="" class="form-label fw-bold">보유포인트</label>
+                <p class="form-control-plaintext">
+                    <span id="point-display">{{user.point}}<b>p</b></span>
+                </p>
+                <div class="input-group" style="max-width: 320px;">
+                    <input type="number" id="charge-amount" class="form-control"
+                           placeholder="충전할 포인트" value="1000" min="1">
+                    <button type="button" class="btn btn-outline-success" onclick="chargePoint()">포인트 충전</button>
+
+                </div>
+            </div>
+
+
             <div class="mb-3">
                 <a href="/user/update" class="btn btn-primary">회원 정보 수정</a>
                 <a href="/" class="btn btn-secondary">목록으로</a>
@@ -43,5 +58,33 @@
         </div>
     </div>
 </div>
+
+<script>
+    // 포인트 충전 API 호출(추후 결제 연동 또는 삭제) - 비동기 방식 처리
+    async function chargePoint() {
+        const amount = Number(document.querySelector("#charge-amount").value);
+        if (!amount || amount <= 0) {
+            alert("충전할 포인터를 올바르게 입력해주세요.")
+            return;
+        }
+
+        try {
+            const response = await fetch("/api/point/charge", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({amount: amount})
+            });
+            const result = await response.json();
+            if (response.ok) {
+                document.querySelector("#point-display").innerHTML = result.point + "<b>p</b>";
+            }
+            alert(result.message);
+        } catch (e) {
+            alert("서버와 통신하지 못했습니다.");
+        }
+
+
+    }
+</script>
 
 {{> layout/footer}}

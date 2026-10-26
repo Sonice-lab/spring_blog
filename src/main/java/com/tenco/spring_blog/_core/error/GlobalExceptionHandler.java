@@ -81,7 +81,7 @@ public class GlobalExceptionHandler {
 //        return "err/403";
 //    }
 
-    // alert 창이 뜰 수 있도록 수정하기
+    // alert 창이 뜰 수 있도록 수정
     @ExceptionHandler(Exception403.class)
     @ResponseBody
     @ResponseStatus(HttpStatus.FORBIDDEN) //상태코드 403 지정(없으면 통신 성공으로 200으로 나감)
@@ -155,6 +155,25 @@ public class GlobalExceptionHandler {
 
         model.addAttribute("msg", "시스템 오류 발생. 관리자에게 문의해주세요.");
         return "err/500";
+    }
+
+    // alert 창이 뜰 수 있도록 수정
+    @ExceptionHandler(NotEnoughPointException.class)
+    @ResponseBody
+    public String ex403(NotEnoughPointException e, HttpServletRequest request, Model model) {
+        log.warn("=== NotEnoughPointException 에러 발생 ===");
+        log.warn("요청 URL: {}", request.getRequestURL());
+        log.warn("권한 오류: {}", e.getMessage());
+        log.warn("예외클래스: {}", e.getClass().getSimpleName());
+
+        String msg = e.getMessage().replace("'", "\\'"); //따옴표 깨짐 방지
+
+        return """
+                <script>
+                    alert('%s');
+                    history.back();
+                </script>
+                """.formatted(msg);
     }
 
     // 오류 화면에서도 Header 의 로그인 메뉴가 보이도록 sessionUserDto Model에 추가

@@ -18,11 +18,39 @@
     </div>
 
     <div>
-        <h2><b>{{board.title}}</b></h2>
+        <h2><b>{{board.title}}</b>
+            {{#board.premium}}<span class="badge bg-warning text-dark">유료</span>{{/board.premium}}
+        </h2>
         <hr>
-        <div class="m-4 p-2">
-            {{board.content}}
-        </div>
+        {{#board.canRead}}
+            <div class="m-4 p-2">
+                {{board.content}}
+            </div>
+        {{/board.canRead}}
+
+        {{!유료 게시글을 못 보는 경우}}
+        {{^board.canRead}}
+            <div>
+                <p>본 게시글은 유료 게시글입니다. 구매 후 전체 내용을 볼 수 있습니다. (500 P)</p>
+
+                {{#sessionUserDto}}
+                {{! 로그인 된 상태에서 포인트 차감을 통해 해당 게시글을 구매 처리해야한다. (db 저장되어야 함)}}
+                    <form action="/board/{{board.id}}/purchase" method="post"
+                          onsubmit="return confirm('500 포인트로 이 게시글을 구매하시겠습니까?')">
+                        <button type="submit" class="btn btn-primary">500 포인트로 구매하기</button>
+                    </form>
+                {{/sessionUserDto}}
+                {{^sessionUserDto}}
+                {{!비로그인자의 접속일 경우 로그인 페이지로 이동}}
+                    <a href="/login" class="btn btn-outline-primary">로그인 후 구매</a>
+                {{/sessionUserDto}}
+
+
+
+            </div>
+        {{/board.canRead}}
+
+
     </div>
 
     {{! 댓글: 아직 기능이 없어 화면만 만들어 둡니다 }}
