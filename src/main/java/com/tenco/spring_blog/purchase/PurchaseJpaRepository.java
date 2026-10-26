@@ -23,6 +23,11 @@ public interface PurchaseJpaRepository extends JpaRepository<Purchase, Long> {
             """)
     boolean existsByUserIdAndBoardId(@Param("userId") Long userId, @Param("boardId") Long boardId);
 
+    // 게시글을 구매한 건수 (게시글 삭제 가능 여부 확인)
+    @Query("select count(p) from Purchase p where p.board.id = :boardId")
+    long countByBoardId(@Param("boardId") Long boardId);
+
+
     // 3. 게시글에 달린 구매 내역 일괄 삭제 (게시글 삭제 전에 사용) --> 예시) 사용자 1번이 구매한 모든 구매내역을 삭제한다.
     @Modifying // select가 아니라면 반드시 설정(JPQL 쿼리를 작성했을 때)
     @Query("delete from Purchase p where p.board.id = :boardId")

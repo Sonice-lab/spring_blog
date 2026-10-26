@@ -160,18 +160,16 @@ public class GlobalExceptionHandler {
     // alert 창이 뜰 수 있도록 수정
     @ExceptionHandler(NotEnoughPointException.class)
     @ResponseBody
-    public String ex403(NotEnoughPointException e, HttpServletRequest request, Model model) {
-        log.warn("=== NotEnoughPointException 에러 발생 ===");
+    public String exNotEnoughPointException(NotEnoughPointException e, HttpServletRequest request, Model model) {
+        log.warn("=== 포인트 부족 에러 발생 ===");
         log.warn("요청 URL: {}", request.getRequestURL());
-        log.warn("권한 오류: {}", e.getMessage());
-        log.warn("예외클래스: {}", e.getClass().getSimpleName());
 
         String msg = e.getMessage().replace("'", "\\'"); //따옴표 깨짐 방지
 
         return """
                 <script>
                     alert('%s');
-                    history.back();
+                    location.href = '/user/detail';
                 </script>
                 """.formatted(msg);
     }
