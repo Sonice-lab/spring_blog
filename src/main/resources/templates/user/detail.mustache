@@ -38,23 +38,17 @@
             <div class="mb-3">
                 <label for="" class="form-label fw-bold">보유포인트</label>
                 <p class="form-control-plaintext">
-                    <span id="point-display">{{user.point}}<b>p</b></span>
+                    <span id="point-display">{{user.point}}<b>P</b></span>
                 </p>
-                <div class="input-group" style="max-width: 320px;">
-                    <input type="number" id="charge-amount" class="form-control"
-                           placeholder="충전할 포인트" value="1000" min="1">
-                    <button type="button" class="btn btn-outline-success" onclick="chargePoint()">포인트 충전</button>
-
-                </div>
+                <!--임시 충전 삭제-->
             </div>
 
 
-            <div class="mb-3">
+            <div class="d-flex flex-column gap-2 mb-3">
+                <a href="/user/point/charge" class="btn btn-success">포인트 충전(PG 결제)</a>
                 <a href="/user/update" class="btn btn-primary">회원 정보 수정</a>
                 <a href="/" class="btn btn-secondary">목록으로</a>
             </div>
-
-
         </div>
     </div>
 </div>
