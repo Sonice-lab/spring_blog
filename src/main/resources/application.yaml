@@ -40,3 +40,9 @@ oauth:
     client_secret: ${KAKAO_CLIENT_SECRET}
     redirect-uri: ${REDIRECT_URI}
     access-token: ${ACCESS_TOKEN}
+
+# 포트원 V2 결제 방식 설정 - 콜론 처리: 뒤가 비어있으면 .env에 값이 없어도 서버는 시작됨(다만 결제는 실패함)
+portone:
+  store-id: ${PORTONE_STORE_ID:}
+  channel-key: ${PORTONE_CHANNEL_KEY:}
+  api-secret: ${PORTONE_API_SECRET:}

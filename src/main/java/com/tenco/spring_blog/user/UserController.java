@@ -28,12 +28,21 @@ public class UserController {
     private final KakaoLoginService kakaoLoginService;
 
 
+    // GET http://localhost:8080/user/point/charge (포인트 충전 화면)
+    @GetMapping("/user/point/charge")
+    public String chargePointForm(Model model, HttpSession session) {
+        // 세션에서 로그인 정보 꺼내기
+        SessionUserDto sessionUserDto = (SessionUserDto) session.getAttribute(Define.SESSION_USER);
+        // 화면(View)으로 데이터 넘겨주기
+        model.addAttribute("user", sessionUserDto);
+        return "user/charge-point";
+    }
+
+
     @GetMapping("/kakao-login")
     public String kakaoLogin() {
         return "redirect:" + kakaoLoginService.getAuthorizeUrl();
     }
-
-    //
 
     // 흐름
     // 1. 인가 코드 받기 --> 엑세스 토큰 요청(보안상의 이유) -> 사용자 정보 요청 -> 가입 또는 로그인 처리
