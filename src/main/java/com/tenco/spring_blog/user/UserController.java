@@ -2,6 +2,8 @@ package com.tenco.spring_blog.user;
 
 import com.tenco.spring_blog._core.error.UnAuthorizedException;
 import com.tenco.spring_blog._core.util.Define;
+import com.tenco.spring_blog.purchase.Purchase;
+import com.tenco.spring_blog.purchase.PurchaseService;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +21,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.List;
+
 @RequiredArgsConstructor //DI 처리
 @Slf4j
 @Controller //IoC (제어의 역전) 싱글톤 패턴으로 관리됨
@@ -26,6 +30,22 @@ public class UserController {
 
     private final UserService userService;
     private final KakaoLoginService kakaoLoginService;
+    private final PurchaseService purchaseService;
+
+    // GET http://localhost:8080/user/purchase/list (구매 내역 화면)
+    @GetMapping("/user/purchase/list")
+    public String purchaseList(Model model, HttpSession session) {
+        // 1. 세션에서 로그인 사용자 정보 꺼내기
+        SessionUserDto sessionUserDto = (SessionUserDto) session.getAttribute(Define.SESSION_USER);
+        model.addAttribute("user", sessionUserDto);
+
+        // 2. 현재 로그인한 사용자의 ID를 기반으로 DB에서 구매 내역 조회
+        List<Purchase> purchaseList = purchaseService.purchaseList(sessionUserDto.getId());
+
+        // 3. 조회된 리스트를 "purchaseList"라는 키값으로 Model에 담아 뷰로 전달
+        model.addAttribute("purchaseList", purchaseList);
+        return "user/purchase-list";
+    }
 
     // GET http://localhost:8080/user/point/charge (포인트 충전 화면)
     @GetMapping("/user/point/charge")

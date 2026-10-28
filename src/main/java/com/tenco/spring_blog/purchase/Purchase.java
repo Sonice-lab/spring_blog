@@ -1,5 +1,6 @@
 package com.tenco.spring_blog.purchase;
 
+import com.tenco.spring_blog._core.util.MyDateUtil;
 import com.tenco.spring_blog.board.Board;
 import com.tenco.spring_blog.user.User;
 import jakarta.persistence.*;
@@ -34,6 +35,11 @@ public class Purchase {
 
     @CreationTimestamp
     private Timestamp createdAt;
+
+    // 객체가 생성된 시점
+    public String getTime() {
+        return MyDateUtil.timestampFormat(createdAt);
+    }
 
     @Builder
     public Purchase(User user, Board board, int price) {

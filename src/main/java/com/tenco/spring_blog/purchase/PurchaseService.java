@@ -11,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 
 @Slf4j
 @RequiredArgsConstructor
@@ -60,6 +62,17 @@ public class PurchaseService {
         purchaseJpaRepository.save(purchase);
 
 
+    }
+    // 구매내역 조회 후 DTO 변환(트랜잭션 안)
+    @Transactional(readOnly = true)
+    public List<Purchase> purchaseList(Long userId) {
+
+        // 1. 구매자 조회 -
+        User user = userJpaRepository.findById(userId)
+                .orElseThrow(() -> new Exception400("사용자를 찾을 수 없습니다."));
+
+        // 2.특정 아이디의 마이페이지에 구매내역 버튼을 누르면 해당 아이디가 구매한 내역이 모두 출력되도록 구현.
+        return purchaseJpaRepository.findByUserIdWithBoardAndUser(userId);
     }
 
 }

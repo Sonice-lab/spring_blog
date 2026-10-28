@@ -11,13 +11,12 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-@Getter
+
 @NoArgsConstructor // 기본 생성자 필수(JPA 엔티티 생성자)
 @AllArgsConstructor
 @Table(name = "user_tb")
 @Entity //자동 테이블 생성
-@Data
-
+@Getter
 public class User {
 
     //pk 만들기

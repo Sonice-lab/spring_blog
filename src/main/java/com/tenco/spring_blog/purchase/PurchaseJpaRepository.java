@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface PurchaseJpaRepository extends JpaRepository<Purchase, Long> {
@@ -32,6 +33,11 @@ public interface PurchaseJpaRepository extends JpaRepository<Purchase, Long> {
     @Modifying // select가 아니라면 반드시 설정(JPQL 쿼리를 작성했을 때)
     @Query("delete from Purchase p where p.board.id = :boardId")
     void deleteByBoardId(@Param("boardId") Long boardId);
+
+    // 4. 해당 아이디가 구매한 내역이 모두 나온다. -> 엔티티에 매핑된 연관 관계 객체 필드명을 기준으로 작동(N+1 방지)
+    // 현재 사용자의 구매 내역과, 해당 구매 내역의 게시글(board), 게시글 작성자(user)를 한 번에 조회
+    @Query(value = "select p from Purchase p join fetch p.user join fetch p.board b join fetch b.user where p.user.id = :userId ")
+    List<Purchase> findByUserIdWithBoardAndUser(@Param("userId") Long userId);
 
 
 }
