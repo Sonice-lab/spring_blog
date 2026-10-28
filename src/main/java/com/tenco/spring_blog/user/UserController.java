@@ -2,6 +2,8 @@ package com.tenco.spring_blog.user;
 
 import com.tenco.spring_blog._core.error.UnAuthorizedException;
 import com.tenco.spring_blog._core.util.Define;
+import com.tenco.spring_blog.purchase.PurchaseResponse;
+import com.tenco.spring_blog.purchase.PurchaseService;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +21,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.List;
+
 @RequiredArgsConstructor //DI 처리
 @Slf4j
 @Controller //IoC (제어의 역전) 싱글톤 패턴으로 관리됨
@@ -26,6 +30,22 @@ public class UserController {
 
     private final UserService userService;
     private final KakaoLoginService kakaoLoginService;
+    private final PurchaseService purchaseService;
+
+    // GET http://localhost:8080/user/purchase/list (구매 내역 화면)
+    @GetMapping("/user/purchase/list")
+    public String purchaseList(Model model, HttpSession session) {
+
+        // 서비스 단으로 조회
+        // 1. 조회
+        SessionUserDto sessionUserDto = (SessionUserDto) session.getAttribute(Define.SESSION_USER);
+        List<PurchaseResponse.ListDto> purchaseList = purchaseService.findAllByUserId(sessionUserDto.getId());
+        // 2. 응답 DTO -> 머스태치 파일에 내려주기 -> 완료
+        model.addAttribute("purchaseList", purchaseList);
+
+
+        return "user/purchase-list";
+    }
 
     // GET http://localhost:8080/user/point/charge (포인트 충전 화면)
     @GetMapping("/user/point/charge")

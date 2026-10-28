@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface PurchaseJpaRepository extends JpaRepository<Purchase, Long> {
@@ -33,5 +34,15 @@ public interface PurchaseJpaRepository extends JpaRepository<Purchase, Long> {
     @Query("delete from Purchase p where p.board.id = :boardId")
     void deleteByBoardId(@Param("boardId") Long boardId);
 
+    // 4. 로그인 사용자 구매 내역 조회
+    // 가져와야할 것 : 구매내역 + 게시글 타이틀 + 게시글 작성자 이름을 한 번에 쿼리로 가져와야 한다.(최신 구매순 정렬)
+    @Query("""
+            select p from Purchase p 
+            join fetch p.board b
+            join fetch b.user
+            where p.user.id = :userId
+            order by p.id desc 
+            """)
+    List<Purchase> findAllByUserIdJoinBoard(@Param("userId") Long userId);
 
 }
