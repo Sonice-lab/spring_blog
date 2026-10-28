@@ -32,6 +32,12 @@ public class UserController {
     private final KakaoLoginService kakaoLoginService;
     private final PurchaseService purchaseService;
 
+    // GET http://localhost:8080/user/payment/list (결제 내역 화면)
+    @GetMapping("/user/payment/list")
+    public String paymentList() {
+        return "user/payment-list";
+    }
+
     // GET http://localhost:8080/user/purchase/list (구매 내역 화면)
     @GetMapping("/user/purchase/list")
     public String purchaseList(Model model, HttpSession session) {
