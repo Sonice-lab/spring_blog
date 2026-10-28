@@ -45,4 +45,7 @@ public interface PurchaseJpaRepository extends JpaRepository<Purchase, Long> {
             """)
     List<Purchase> findAllByUserIdJoinBoard(@Param("userId") Long userId);
 
+
+
+
 }

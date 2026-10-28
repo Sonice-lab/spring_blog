@@ -28,9 +28,11 @@ public class Payment {
 
     // 결제 건 식별자(같은 값이 두번 저장되지 않도록 유니크 처리)
     @Column(unique = true, nullable = false, length = 100)
+    @JoinColumn(name = "payment_id", nullable = false)
     private String paymentId;
 
     // PG 사 거래번호 (결제 완료되면 - 포트원 사이트에서 응답을 받음, 추후 추적용)
+    @JoinColumn(name = "pg_tx_id", nullable = false)
     private String pgTxId;
 
     // 결제한 사용자 - 한 유저는 여러 번 결제할 수 있다.

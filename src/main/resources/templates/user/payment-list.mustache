@@ -7,30 +7,37 @@
         </div>
         <div class="card-body">
             <!-- 결제 내역 반복문 시작 -->
-            <div class="card mb-4">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div class="flex-grow-1">
-                            <h5 class="card-title mb-2"><a href="/board/"></a></h5>
-                            <p class="text-muted mb-2"><i class="fa-solid fa-user"></i></p>
-                            <p class="text-muted mb-2"><i class="fa-solid fa-calendar"></i></p>
-                        </div>
-                        <div class="text-end">
-                            <span class="badge bg-primary fs-6">- P</span>
+            {{#paymentList}}
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="flex-grow-1">
+                                <h5 class="card-title mb-2"><a href="/board/">주문번호: {{paymentId}}</a></h5>
+                                <p class="text-muted mb-2"><i class="fa-solid fa-user"></i>결제번호: {{pgTxId}}</p>
+                                <p class="text-muted mb-2"><i class="fa-solid fa-calendar"></i>결제일: {{purchasedAt}} </p>
+                                <p class="text-muted mb-2"><i class="fa-solid fa-calendar"></i>상태: {{status}}
+                                    <span class="badge bg-success me-2">{{status}}</span>
+                                </p>
+                            </div>
+                            <div class="text-end">
+                                <span class="badge bg-primary fs-6">- {{amount}}P</span>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <!--  결제 내역 반복문 종료 ..      -->
+            {{/paymentList}}
+            <!--  결제 내역 반복문 종료 -->
 
 
             <!--  결제 내역이 없을 경우 -->
+            {{^paymentList}}
             <div class="text-center py-5">
                 <i class="fa-solid fa-cart-shopping fa-3x text-muted mb-3"></i>
                 <h5 class="text-muted">결제 내역이 없습니다</h5>
                 <h5 class="text-muted">포인트를 충전하여 유용한 블로그 게시글을 만나보세요.</h5>
                 <a href="/user/point/charge" class="btn btn-primary">포인트 충전하기</a>
             </div>
+            {{/paymentList}}
             <!--  결제 내역이 없을 경우 -->
 
             <div class="mb-4">

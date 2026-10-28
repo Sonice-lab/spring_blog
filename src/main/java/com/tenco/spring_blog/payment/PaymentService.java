@@ -2,6 +2,8 @@ package com.tenco.spring_blog.payment;
 
 import com.tenco.spring_blog._core.error.Exception400;
 import com.tenco.spring_blog._core.error.Exception403;
+import com.tenco.spring_blog.purchase.Purchase;
+import com.tenco.spring_blog.purchase.PurchaseResponse;
 import com.tenco.spring_blog.user.User;
 import com.tenco.spring_blog.user.UserJpaRepository;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 @Slf4j
@@ -101,5 +104,15 @@ public class PaymentService {
 
         return new PaymentResponse.CompleteDto(payment.getAmount(), user.getPoint());
 
+    }
+
+    // 결제 내역 조회 todo
+    // 로그인한 사용자의 유료 게시글 구매 내역 조회 기능
+    public List<PaymentResponse.ListDto> findAllByUserId(Long userId) {
+        List<Payment> purchaseList = paymentJpaRepository.findAllByUserIdPayment(userId);
+        // 2. 트랜잭션 안에서 엔티티를 응답 DTO로 변환해서 리턴하기
+        return purchaseList.stream()
+                .map(PaymentResponse.ListDto::new)
+                .toList();
     }
 }

@@ -1,9 +1,11 @@
 package com.tenco.spring_blog.payment;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.tenco.spring_blog._core.util.MyDateUtil;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
 
 public class PaymentResponse {
 
@@ -45,6 +47,32 @@ public class PaymentResponse {
         @JsonIgnoreProperties(ignoreUnknown = true)
         public static class Amount {
             private Integer total;
+        }
+    }
+
+    // 결제 내역 리스트 요청 관련 응답
+    @Getter
+    public static class ListDto {
+        private Long id; // 결제 내역 pk
+        private String paymentId; // 주문번호
+        private String pgTxId; // 결제번호
+        private String purchasedAt; // 결제일
+        private PaymentStatus status; // 결제 상태 (포맷된 문자열)
+
+        private int amount; // 실제 결제(충전)금액을 담을 변수
+
+        @Builder
+
+        public ListDto(Payment payment) {
+            this.id = payment.getId();
+            // 추가: 엔티티에서 금액을 가져와 DTO에 담기
+            this.amount = payment.getAmount();
+            if (payment.isPaid()) {
+                this.paymentId = payment.getPaymentId();
+                this.pgTxId = payment.getPgTxId();
+                this.status = PaymentStatus.PAID;
+            }
+            this.purchasedAt = MyDateUtil.timestampFormat(payment.getCreatedAt());
         }
     }
 
