@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 @Slf4j
@@ -19,6 +20,15 @@ public class PaymentService {
 
     private final PaymentJpaRepository paymentJpaRepository;
     private final UserJpaRepository userJpaRepository;
+
+    public List<PaymentResponse.ListDto> findAllByUserId(Long userId) {
+        List<Payment> paymentList = paymentJpaRepository.findAllByUserIdAndStatus(userId, PaymentStatus.PAID);
+
+        // 응답 DTO 설계 후 리턴
+        return paymentList.stream()
+                .map(PaymentResponse.ListDto::new)
+                .toList();
+    }
 
     /**
      * 1단계: 결제 건 생성
@@ -33,7 +43,7 @@ public class PaymentService {
         String paymentId = generatePaymentId(sessionUserId);
 
         // 조회 기능 만들기 관련 처리 -> 중복되지 않는 paymentId 생성 완료
-        while(paymentJpaRepository.existsByPaymentId(paymentId)) {
+        while (paymentJpaRepository.existsByPaymentId(paymentId)) {
             paymentId = generatePaymentId(sessionUserId);
         }
 
@@ -69,12 +79,12 @@ public class PaymentService {
                 .orElseThrow(() -> new Exception400("결제 정보를 찾을 수 없습니다."));
 
         // 2. 결제를 시작한 본인인지 확인
-        if(!payment.isOwner(sessionUserId)) {
+        if (!payment.isOwner(sessionUserId)) {
             throw new Exception403("본인의 결제 내역만 처리할 수 있습니다.");
         }
 
         // 3. 중복 지급 방지: 이미 PAID이면 거부
-        if(payment.isPaid()) {
+        if (payment.isPaid()) {
             throw new Exception400("이미 처리된 결제입니다.");
         }
 
@@ -84,7 +94,7 @@ public class PaymentService {
         }
 
         // 5. [중요] 금액 위변조 확인: 실제 결제 금액 == 1단계에서 기록한 금액이 동일해야함
-        if(portOnePayment.getAmount() == null
+        if (portOnePayment.getAmount() == null
                 || portOnePayment.getAmount().getTotal() == null
                 || portOnePayment.getAmount().getTotal() != payment.getAmount()) {
 
