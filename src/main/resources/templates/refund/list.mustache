@@ -1,0 +1,55 @@
+
+
+{{> layout/header}}
+
+<div class="container p-5">
+    <div class="card">
+        <div class="card-header">
+            <h4 class="mb-0"><b>환불 요청 내역</b></h4>
+        </div>
+        <div class="card-body">
+
+            {{#refundList}}
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title mb-2">환불 요청 #{{id}}</h5>
+                        <p class="text-muted mb-2"><i class="fa-solid fa-receipt"></i> 결제 번호 : {{paymentId}}</p>
+                        <p class="text-muted mb-2">
+                            <i class="fa-solid fa-won-sign"></i> 환불 금액 :<span class="fw-bold text-danger">{{amount}} P</span>
+                        </p>
+                        <p class="text-muted mb-2"><i class="fa-solid fa-comment"></i> 환불 사유 : {{reason}}</p>
+                        <p class="text-muted mb-2"><i class="fa-solid fa-calendar"></i> 요청일 : {{requestAt}}</p>
+                        <p class="text-muted mb-2">
+                            <i class="fa-solid fa-circle-info"></i> 상태 :
+                            {{#pending}}<span class="badge bg-warning text-dark">{{statusDisplay}}</span>{{/pending}}
+                            {{#approved}}<span class="badge bg-success">{{statusDisplay}}</span>{{/approved}}
+                            {{#rejected}}<span class="badge bg-secondary">{{statusDisplay}}</span>{{/rejected}}
+                        </p>
+                        {{#rejected}}
+                            <p class="text-muted mb-0">
+                                <i class="fa-solid fa-circle-xmark"></i> 거절 사유 :<span class="text-danger">{{rejectReason}}</span>
+                            </p>
+                        {{/rejected}}
+                    </div>
+                </div>
+            {{/refundList}}
+
+            {{^refundList}}
+                <div class="text-center py-5">
+                    <i class="fa-solid fa-rotate-left fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">환불 요청 내역이 없습니다</h5>
+                    <p class="text-muted">결제 내역에서 환불을 요청할 수 있습니다</p>
+                    <a href="/user/payment/list" class="btn btn-primary">결제 내역으로</a>
+                </div>
+            {{/refundList}}
+
+            <div class="mt-4">
+                <a href="/user/payment/list" class="btn btn-outline-secondary">결제 내역</a>
+                <a href="/user/detail" class="btn btn-secondary">마이페이지로 돌아가기</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{> layout/footer}}
+

@@ -16,16 +16,23 @@ public class PaymentResponse {
         private String pgTxId;
         private int amount;
         private String statusDisplay; // 상태 표시 이름 (결제 완료 등)
-        private String paidAt;
+        private String paidAt; // 결제 시간
+        private boolean cancelled; // 추가: 환불 완료 결제 인지확인 (배지 색 구분용)
+        private boolean refundable; // 추가: 환불 요청 버튼 표시 여부
 
+        // todo - 환불 테이블 만들기
+        // 환불 가능 여부는 환불 요청 기록이 있어야 알 수 있으므로
+        // 서비스에서 계산하여 넘겨준다.
         @Builder
-        public ListDto(Payment payment) {
+        public ListDto(Payment payment, boolean refundable) {
             this.id = payment.getId();
             this.paymentId = payment.getPaymentId();
             this.pgTxId = payment.getPgTxId();
             this.amount = payment.getAmount();
             this.statusDisplay = payment.getStatus().getDisplayName(); //결제 완료, 결제 대기, 결제 취소 등
             this.paidAt = MyDateUtil.timestampFormat(payment.getCreatedAt());
+            this.cancelled = payment.getStatus() == PaymentStatus.CANCELLED; // 같다면 true, 아니면 false
+            this.refundable = refundable;
         }
     }
 

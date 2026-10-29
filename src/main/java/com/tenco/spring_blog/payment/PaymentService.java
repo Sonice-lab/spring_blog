@@ -2,6 +2,9 @@ package com.tenco.spring_blog.payment;
 
 import com.tenco.spring_blog._core.error.Exception400;
 import com.tenco.spring_blog._core.error.Exception403;
+import com.tenco.spring_blog.refund.Refund;
+import com.tenco.spring_blog.refund.RefundRepository;
+import com.tenco.spring_blog.refund.RefundResponse;
 import com.tenco.spring_blog.user.User;
 import com.tenco.spring_blog.user.UserJpaRepository;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -20,14 +24,37 @@ public class PaymentService {
 
     private final PaymentJpaRepository paymentJpaRepository;
     private final UserJpaRepository userJpaRepository;
+    private final RefundRepository refundRepository;
+
 
     public List<PaymentResponse.ListDto> findAllByUserId(Long userId) {
-        List<Payment> paymentList = paymentJpaRepository.findAllByUserIdAndStatus(userId, PaymentStatus.PAID);
 
+        // 1. 화면에 보여줄 상태 목록 (READY는 제외) - List<Payment> (로그인한 유저의 리스트)
+        List<Payment> paymentList = paymentJpaRepository.findAllByUserIdAndStatusList(userId, List.of(PaymentStatus.PAID, PaymentStatus.CANCELLED));
+
+        // [도현]환불 테이블에 내가 요청한 PK 정보만 리스트로 뽑아 온다. -> true, false
+        // 2번 user의 환불 정보에 대해
+        List<Long> requestedPaymentPkList = refundRepository.findPaymentPkListByUserId(userId);
+
+        // 결제 1건씩 DTO로 바꾸면서 환불 버튼을 보여줄 지 결정한다.
+        // Payment List --> p1, p2, p3, p4, p5...
+        // 위의 결제 내용 중에 환불 요청한 내역을 뽑아야 한다. -> 가정) p2, p3...
+        List<PaymentResponse.ListDto> resultList = new ArrayList<>();
+        for (Payment payment : paymentList) {
+            // 환불 요청하지 않은 리스트는 환불 버튼을 보여준다.
+            boolean refundable = false; // 기본값은 버튼 숨김
+
+            // Payment 테이블에 PAID 상태이고, 아직 환불 요청한 적이 없을 때 (Refund payment_id가 없어야 함)
+            if (payment.isPaid()) {
+                boolean isRefundRequest = requestedPaymentPkList.contains(payment.getId());
+                if (isRefundRequest == false) {
+                    refundable = true;  // 환불 버튼을 보여준다.
+                }
+            }
+            resultList.add(new PaymentResponse.ListDto(payment, refundable));
+        }
         // 응답 DTO 설계 후 리턴
-        return paymentList.stream()
-                .map(PaymentResponse.ListDto::new)
-                .toList();
+        return resultList;
     }
 
     /**

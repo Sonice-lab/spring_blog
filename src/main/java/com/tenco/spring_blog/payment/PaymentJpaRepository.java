@@ -16,21 +16,22 @@ public interface PaymentJpaRepository extends JpaRepository<Payment, Long> {
 
     // 쿼리 메서드
     @Query("""
-        select case when count(p) > 0 then true else false end
-        from Payment p
-        where p.paymentId = :paymentId""")
+            select case when count(p) > 0 then true else false end
+            from Payment p
+            where p.paymentId = :paymentId""")
     boolean existsByPaymentId(@Param("paymentId") String paymentId);
 
+    
     // 결제 내역 조회 (로그인 사용자)
+    // 상태값(CANCELLED, PAID)만 받도록 함 -> in 쿼리로 구현
     @Query("""
             select p from Payment p
             where p.user.id = :userId
-            and p.status = :status
+            and p.status in :statusList 
             order by p.id desc
             """)
-    List<Payment> findAllByUserIdAndStatus(@Param("userId") Long userId,
-                                           @Param("status") PaymentStatus status);
-
+    List<Payment> findAllByUserIdAndStatusList(@Param("userId") Long userId,
+                                               @Param("statusList") List<PaymentStatus> statusList);
 
 
 }

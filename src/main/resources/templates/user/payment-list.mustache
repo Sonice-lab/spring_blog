@@ -13,47 +13,71 @@
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-start">
                             <div class="flex-grow-1">
-
                                 <h5 class="card-title mb-2">결제 {{id}}</h5>
-
-                                <p class="text-muted mb-2"><i class="fa-solid fa-receipt"></i> 결제번호 : {{paymentId}}
-                                    point_2_1761030000000_a1b2c3d4</p>
-
+                                <p class="text-muted mb-2"><i class="fa-solid fa-receipt"></i> 결제번호 :
+                                    {{paymentId}}</p>
                                 {{#pgTxId}}
                                     <p class="text-muted mb-2"><i class="fa-solid fa-hashtag"></i> PG 거래번호 : {{pgTxId}}
                                     </p>
                                 {{/pgTxId}}
-
                                 <p class="text-muted mb-2"><i class="fa-solid fa-calendar"></i> 결제일 : {{paidAt}}
                                 </p>
-                                <p class="text-muted mb-0">
-                                    <i class="fa-solid fa-circle-info"></i> 상태 :
-                                    <span class="badge bg-success">{{statusDisplay}}</span>
-                                </p>
+
+                                <!--    결제 완료/ 환불 완료  -->
+                                {{^cancelled}}
+                                    <p class="text-muted mb-0">
+                                        <i class="fa-solid fa-circle-info"></i> 상태 :
+                                        <span class="badge bg-success">{{statusDisplay}}</span>
+                                    </p>
+                                {{/cancelled}}
+
+                                {{#cancelled}}
+                                    <p class="text-muted mb-0">
+                                        <i class="fa-solid fa-circle-info"></i> 상태 :
+                                        <span class="badge bg-secondary">{{statusDisplay}}</span>
+                                    </p>
+                                {{/cancelled}}
+
                             </div>
+
                             <div class="text-end">
-                                <span class="badge bg-primary fs-6">+ {{amount}}P</span>
+                                {{^cancelled}}
+                                    <span class="badge bg-primary fs-6 d-block mb-2">+{{amount}} P</span>
+                                {{/cancelled}}
+                                {{#cancelled}}
+                                    <span class="badge bg-secondary text-decoration-line-through fs-6 d-block mb-2">+{{amount}}
+                                        P</span>
+                                {{/cancelled}}
+                                <!--   환불 여부 버튼 추가 -->
+                                {{#refundable}}
+                                    <!-- 환불 요청 폼 태그 이동: 결제 pk로 처리 -->
+                                    <a href="/refund/request/{{id}}" class="btn btn-outline-danger btn-sm">환불 요청</a>
+                                {{/refundable}}
+
                             </div>
+
+
                         </div>
                     </div>
                 </div>
             {{/paymentList}}
-            <!-- 반복 끝 :-->
 
-            <!-- 결제 내역이 없을 때 :로 안내 문구 추가 -->
             {{^paymentList}}
                 <div class="text-center py-5">
-                    <i class="fa-solid fa-credit-card fa-3x mb-2"></i>
-                    <h5 class="text-muted">결제 내역이 없습니다.</h5>
-                    <h5 class="text-muted">포인트를 충전하세요.</h5>
-                    <a href="/user/point/charge" class="btn btn-primary">포인트 충전하러가기</a>
+                    <i class="fa-solid fa-credit-card fa-3x"></i>
+                    <h5 class="text-muted">결제 내역이 없습니다</h5>
+                    <p class="text-muted">포인트를 충전해보세요</p>
+                    <a href="/user/point/charge" class="btn btn-primary">포인트 충전하기</a>
                 </div>
             {{/paymentList}}
 
             <div class="mt-4">
+                <!--   추가             -->
+                <a href="/refund/list" class="btn btn-info">
+                    <i class="fa-solid fa-rotate-left"></i>환불 요청 내역
+                </a>
                 <a href="/user/detail" class="btn btn-secondary">마이페이지로 돌아가기</a>
             </div>
-
         </div>
     </div>
 </div>
