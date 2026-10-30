@@ -3,12 +3,13 @@ package com.tenco.spring_blog.payment;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Component;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.http.HttpHeaders;
+
+import java.util.Map;
 
 
 //portone:
@@ -56,5 +57,37 @@ public class PortOneApiClient {
         return response.getBody();
     }
 
+    // 포트원 서버에 결제 취소 요청
+    // amount를 넣으면 그 금액만큼 취소됨(부분 환불 가능), 넣지 않을 경우 전액 취소(사전에 문서에서 확인해야하는 부분)
+    // 이번 로직은 결제 금액 전체를 넣는다.
+    /**
+     * POST /payments/point_2_1761030000000_a1b2c3d4/cancel HTTP/1.1
+     * Host: api.portone.io
+     * Authorization: PortOne ${PORTONE_API_SECRET}
+     * Content-Type: application/json
+     */
+    public PaymentResponse.PortOneCancel cancelPayment(String paymentId, int amount) {
 
+        // 헤더 생성
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(HttpHeaders.AUTHORIZATION, "PortOne " + apiSecret);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        // 본문 부분 나올 데이터 준비
+       Map<String, Object> body = Map.of("amount", amount, "reason", "관리자 환불 승인");
+
+        // 바디와 헤더를 합쳐주는 메서드
+        HttpEntity<Map<String,Object>> request = new HttpEntity(body, headers);
+
+        // 주소, method, HTTP 메세지, 응답 타입
+        ResponseEntity<PaymentResponse.PortOneCancel> response = restTemplate.exchange(
+                PAYMENT_URL + "/" + paymentId + "/cancel",
+                HttpMethod.POST,
+                request,
+                PaymentResponse.PortOneCancel.class
+        );
+
+        return response.getBody();
+
+    }
 }

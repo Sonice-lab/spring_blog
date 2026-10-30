@@ -78,4 +78,10 @@ public class Payment {
         this.pgTxId = pgTxId; // null 값 허용
     }
 
+    //  메서드를 통해서 상태 값 만들기
+    public void markCancelled() {
+        this.status = PaymentStatus.CANCELLED;
+
+    }
+
 }

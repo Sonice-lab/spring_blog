@@ -27,8 +27,25 @@ public interface RefundRepository extends JpaRepository<Refund, Long> {
             """)
     List<Refund> findAllByUserIdJoinPayment(@Param("userId") Long userId);
 
+
+
     // todo
     // 관리자: 전체 환불 요청 목록
+    @Query("""
+                select r from Refund r
+                join fetch r.user
+                join fetch r.payment
+                order by r.id desc
+            """)
+    List<Refund> findAllJoinUserAndPayment();
 
     // 관리자: 승인할 환불 요청 1건 정보 조회
+    @Query("""
+            select r from Refund r
+            join fetch r.user
+            join fetch r.payment
+            where r.id = :id
+            """)
+    Optional<Refund> findByIdJoinUserAndPayment(@Param("id") Long id);
+
 }

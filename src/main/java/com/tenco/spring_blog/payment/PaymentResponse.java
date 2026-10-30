@@ -8,6 +8,23 @@ import lombok.Data;
 
 public class PaymentResponse {
 
+    // 포트원 결제 취소 응답
+    @Data
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class PortOneCancel {
+        Cancellation cancellation;
+
+        @Data
+        @JsonIgnoreProperties(ignoreUnknown = true)
+        public static class Cancellation {
+            private String id;
+            private String status;
+            private int totalAmount;
+
+        }
+
+    }
+
     // 결제 내역(포인트 결제) DTO
     @Data
     public static class ListDto {
